@@ -99,6 +99,7 @@ function buildPlayers(): Player[] {
       id: crypto.randomUUID(),
       name: r.name + suffix,
       active: true,
+      escalavel: true,
       positionPrimary: finalPos1,
       positionSecondary: finalPos2,
       skills: mapSkills(r.ataque, r.defesa, r.velocidade, r.apoio, r.folego, finalPos1),

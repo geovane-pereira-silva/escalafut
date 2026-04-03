@@ -46,6 +46,7 @@ export default function PlayerForm({ onSave, editingPlayer, onCancelEdit }: Play
       id: editingPlayer?.id ?? crypto.randomUUID(),
       name: capitalize(name.trim()),
       active,
+      escalavel: editingPlayer?.escalavel ?? true,
       positionPrimary: posPrimary,
       positionSecondary: posSecondary,
       skills: { ...skills },
