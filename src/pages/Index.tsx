@@ -9,7 +9,8 @@ import PlayerRadar from '@/components/PlayerRadar';
 import TeamDisplay from '@/components/TeamDisplay';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Swords, Trophy } from 'lucide-react';
+import { Swords, Trophy, Upload } from 'lucide-react';
+import { getImportPlayers } from '@/lib/importPlayers';
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
@@ -61,6 +62,19 @@ export default function Index() {
     if (editingPlayer?.id === id) setEditingPlayer(null);
   };
 
+  const handleImport = () => {
+    if (!coachId) return;
+    const imported = getImportPlayers();
+    const merged = [...players];
+    for (const p of imported) {
+      if (!merged.find(e => e.name.toLowerCase() === p.name.toLowerCase())) {
+        merged.push(p);
+      }
+    }
+    persist(merged, coachId);
+    toast.success(`${imported.length} jogadores importados!`);
+  };
+
   const handleEscalar = () => {
     if (!coachId) return;
     try {
@@ -107,14 +121,24 @@ export default function Index() {
                   onSelect={setSelectedPlayer}
                   selectedId={selectedPlayer?.id}
                 />
-                <Button
-                  onClick={handleEscalar}
-                  disabled={activeCount < 14}
-                  className="w-full gradient-gold text-primary-foreground font-heading text-lg py-6 gap-2"
-                >
-                  <Swords className="h-5 w-5" />
-                  Escalar Times ({activeCount}/14 ativos)
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleImport}
+                    variant="outline"
+                    className="flex-1 font-heading gap-2"
+                  >
+                    <Upload className="h-5 w-5" />
+                    Importar Jogadores
+                  </Button>
+                  <Button
+                    onClick={handleEscalar}
+                    disabled={activeCount < 14}
+                    className="flex-1 gradient-gold text-primary-foreground font-heading text-lg py-6 gap-2"
+                  >
+                    <Swords className="h-5 w-5" />
+                    Escalar Times ({activeCount}/14 ativos)
+                  </Button>
+                </div>
               </div>
             </div>
 
