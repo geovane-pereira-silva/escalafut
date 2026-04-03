@@ -9,7 +9,8 @@ import PlayerRadar from '@/components/PlayerRadar';
 import TeamDisplay from '@/components/TeamDisplay';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Swords, Trophy } from 'lucide-react';
+import { Swords, Trophy, Upload } from 'lucide-react';
+import { getImportPlayers } from '@/lib/importPlayers';
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
