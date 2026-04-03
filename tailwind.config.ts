@@ -12,8 +12,22 @@ export default {
         "2xl": "1400px",
       },
     },
+    fontFamily: {
+      sans: ['Inter', 'sans-serif'],
+      heading: ['Oswald', 'sans-serif'],
+    },
     extend: {
       colors: {
+        "team-blue": {
+          DEFAULT: "hsl(var(--team-blue))",
+          foreground: "hsl(var(--team-blue-foreground))",
+        },
+        "team-red": {
+          DEFAULT: "hsl(var(--team-red))",
+          foreground: "hsl(var(--team-red-foreground))",
+        },
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
