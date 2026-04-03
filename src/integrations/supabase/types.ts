@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      players: {
+        Row: {
+          active: boolean
+          coach_id: string
+          created_at: string
+          escalavel: boolean
+          id: string
+          name: string
+          position_primary: string
+          position_secondary: string
+          skills: Json
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          coach_id: string
+          created_at?: string
+          escalavel?: boolean
+          id?: string
+          name: string
+          position_primary: string
+          position_secondary?: string
+          skills?: Json
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          coach_id?: string
+          created_at?: string
+          escalavel?: boolean
+          id?: string
+          name?: string
+          position_primary?: string
+          position_secondary?: string
+          skills?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
