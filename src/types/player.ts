@@ -91,6 +91,7 @@ export interface Player {
   id: string;
   name: string;
   active: boolean;
+  escalavel: boolean;
   positionPrimary: Position;
   positionSecondary: Position | '';
   skills: PlayerSkills;
