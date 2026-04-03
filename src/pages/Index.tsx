@@ -121,14 +121,24 @@ export default function Index() {
                   onSelect={setSelectedPlayer}
                   selectedId={selectedPlayer?.id}
                 />
-                <Button
-                  onClick={handleEscalar}
-                  disabled={activeCount < 14}
-                  className="w-full gradient-gold text-primary-foreground font-heading text-lg py-6 gap-2"
-                >
-                  <Swords className="h-5 w-5" />
-                  Escalar Times ({activeCount}/14 ativos)
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleImport}
+                    variant="outline"
+                    className="flex-1 font-heading gap-2"
+                  >
+                    <Upload className="h-5 w-5" />
+                    Importar Jogadores
+                  </Button>
+                  <Button
+                    onClick={handleEscalar}
+                    disabled={activeCount < 14}
+                    className="flex-1 gradient-gold text-primary-foreground font-heading text-lg py-6 gap-2"
+                  >
+                    <Swords className="h-5 w-5" />
+                    Escalar Times ({activeCount}/14 ativos)
+                  </Button>
+                </div>
               </div>
             </div>
 
