@@ -62,6 +62,19 @@ export default function Index() {
     if (editingPlayer?.id === id) setEditingPlayer(null);
   };
 
+  const handleImport = () => {
+    if (!coachId) return;
+    const imported = getImportPlayers();
+    const merged = [...players];
+    for (const p of imported) {
+      if (!merged.find(e => e.name.toLowerCase() === p.name.toLowerCase())) {
+        merged.push(p);
+      }
+    }
+    persist(merged, coachId);
+    toast.success(`${imported.length} jogadores importados!`);
+  };
+
   const handleEscalar = () => {
     if (!coachId) return;
     try {
