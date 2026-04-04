@@ -10,6 +10,7 @@ import PlayerList from '@/components/PlayerList';
 import PlayerRadar from '@/components/PlayerRadar';
 import TeamDisplay from '@/components/TeamDisplay';
 import SelectionView from '@/components/SelectionView';
+import RoundManager from '@/components/RoundManager';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
