@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      player_performance: {
+        Row: {
+          created_at: string
+          id: string
+          player_id: string
+          points_calculated: number
+          round_id: string
+          scouts: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          player_id: string
+          points_calculated?: number
+          round_id: string
+          scouts?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          player_id?: string
+          points_calculated?: number
+          round_id?: string
+          scouts?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_performance_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_performance_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       players: {
         Row: {
           active: boolean
@@ -49,6 +94,36 @@ export type Database = {
           position_primary?: string
           position_secondary?: string
           skills?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rounds: {
+        Row: {
+          coach_id: string
+          created_at: string
+          id: string
+          round_date: string
+          round_number: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          id?: string
+          round_date?: string
+          round_number: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          id?: string
+          round_date?: string
+          round_number?: number
+          status?: string
           updated_at?: string
         }
         Relationships: []
