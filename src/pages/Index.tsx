@@ -3,7 +3,7 @@ import { Player } from '@/types/player';
 import { usePlayers } from '@/hooks/usePlayers';
 import { getLastCoachId, setLastCoachId } from '@/lib/storage';
 import { generateTeams } from '@/lib/escalation';
-import { getImportPlayers } from '@/lib/importPlayers';
+
 import CoachAccess from '@/components/CoachAccess';
 import PlayerForm from '@/components/PlayerForm';
 import PlayerList from '@/components/PlayerList';
@@ -13,11 +13,11 @@ import SelectionView from '@/components/SelectionView';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Swords, Trophy, Upload, Users, UserPlus } from 'lucide-react';
+import { Swords, Trophy, Users, UserPlus } from 'lucide-react';
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
-  const { players, loading, savePlayer, deletePlayer, importPlayers } = usePlayers(coachId);
+  const { players, loading, savePlayer, deletePlayer } = usePlayers(coachId);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showTeams, setShowTeams] = useState(false);
@@ -40,18 +40,7 @@ export default function Index() {
     if (editingPlayer?.id === id) setEditingPlayer(null);
   };
 
-  const handleImport = async () => {
-    if (!coachId) return;
-    const imported = getImportPlayers();
-    const existingNames = new Set(players.map(p => p.name.toLowerCase()));
-    const newPlayers = imported.filter(p => !existingNames.has(p.name.toLowerCase()));
-    if (newPlayers.length === 0) {
-      toast.info('Todos os jogadores já foram importados');
-      return;
-    }
-    await importPlayers(newPlayers);
-    toast.success(`${newPlayers.length} jogadores importados!`);
-  };
+
 
   const handleEscalar = () => {
     try {
@@ -108,14 +97,8 @@ export default function Index() {
                     onSelect={setSelectedPlayer}
                     selectedId={selectedPlayer?.id}
                   />
-                  <Button
-                    onClick={handleImport}
-                    variant="outline"
-                    className="w-full font-heading gap-2"
-                  >
-                    <Upload className="h-5 w-5" />
-                    Importar Jogadores
-                  </Button>
+
+
                 </div>
               </div>
             </TabsContent>
