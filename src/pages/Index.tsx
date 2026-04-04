@@ -14,7 +14,7 @@ import RoundManager from '@/components/RoundManager';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Swords, Trophy, Users, UserPlus } from 'lucide-react';
+import { Swords, Trophy, Users, UserPlus, ClipboardList } from 'lucide-react';
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
