@@ -123,6 +123,11 @@ export default function Index() {
                 Escalar Times ({activeCount}/14 escaláveis)
               </Button>
             </TabsContent>
+
+            {/* Rodadas Tab */}
+            <TabsContent value="rodadas" className="space-y-6">
+              <RoundManager players={players} coachId={coachId} />
+            </TabsContent>
           </Tabs>
         ) : (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
