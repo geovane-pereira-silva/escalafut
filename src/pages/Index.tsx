@@ -40,18 +40,7 @@ export default function Index() {
     if (editingPlayer?.id === id) setEditingPlayer(null);
   };
 
-  const handleImport = async () => {
-    if (!coachId) return;
-    const imported = getImportPlayers();
-    const existingNames = new Set(players.map(p => p.name.toLowerCase()));
-    const newPlayers = imported.filter(p => !existingNames.has(p.name.toLowerCase()));
-    if (newPlayers.length === 0) {
-      toast.info('Todos os jogadores já foram importados');
-      return;
-    }
-    await importPlayers(newPlayers);
-    toast.success(`${newPlayers.length} jogadores importados!`);
-  };
+
 
   const handleEscalar = () => {
     try {
