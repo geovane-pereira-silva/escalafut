@@ -17,7 +17,7 @@ import { Swords, Trophy, Users, UserPlus } from 'lucide-react';
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
-  const { players, loading, savePlayer, deletePlayer, importPlayers } = usePlayers(coachId);
+  const { players, loading, savePlayer, deletePlayer } = usePlayers(coachId);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showTeams, setShowTeams] = useState(false);
