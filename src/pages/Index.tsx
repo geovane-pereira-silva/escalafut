@@ -79,6 +79,10 @@ export default function Index() {
                 <Users className="h-4 w-4" />
                 Seleção
               </TabsTrigger>
+              <TabsTrigger value="rodadas" className="font-heading gap-2">
+                <ClipboardList className="h-4 w-4" />
+                Rodadas
+              </TabsTrigger>
             </TabsList>
 
             {/* Cadastro Tab */}
