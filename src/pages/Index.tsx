@@ -10,10 +10,11 @@ import PlayerList from '@/components/PlayerList';
 import PlayerRadar from '@/components/PlayerRadar';
 import TeamDisplay from '@/components/TeamDisplay';
 import SelectionView from '@/components/SelectionView';
+import RoundManager from '@/components/RoundManager';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Swords, Trophy, Users, UserPlus } from 'lucide-react';
+import { Swords, Trophy, Users, UserPlus, ClipboardList } from 'lucide-react';
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
@@ -78,6 +79,10 @@ export default function Index() {
                 <Users className="h-4 w-4" />
                 Seleção
               </TabsTrigger>
+              <TabsTrigger value="rodadas" className="font-heading gap-2">
+                <ClipboardList className="h-4 w-4" />
+                Rodadas
+              </TabsTrigger>
             </TabsList>
 
             {/* Cadastro Tab */}
@@ -117,6 +122,11 @@ export default function Index() {
                 <Swords className="h-5 w-5" />
                 Escalar Times ({activeCount}/14 escaláveis)
               </Button>
+            </TabsContent>
+
+            {/* Rodadas Tab */}
+            <TabsContent value="rodadas" className="space-y-6">
+              <RoundManager players={players} coachId={coachId} />
             </TabsContent>
           </Tabs>
         ) : (
