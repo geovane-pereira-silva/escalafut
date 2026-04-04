@@ -97,14 +97,8 @@ export default function Index() {
                     onSelect={setSelectedPlayer}
                     selectedId={selectedPlayer?.id}
                   />
-                  <Button
-                    onClick={handleImport}
-                    variant="outline"
-                    className="w-full font-heading gap-2"
-                  >
-                    <Upload className="h-5 w-5" />
-                    Importar Jogadores
-                  </Button>
+
+
                 </div>
               </div>
             </TabsContent>
