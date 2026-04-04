@@ -3,7 +3,7 @@ import { Player } from '@/types/player';
 import { usePlayers } from '@/hooks/usePlayers';
 import { getLastCoachId, setLastCoachId } from '@/lib/storage';
 import { generateTeams } from '@/lib/escalation';
-import { getImportPlayers } from '@/lib/importPlayers';
+
 import CoachAccess from '@/components/CoachAccess';
 import PlayerForm from '@/components/PlayerForm';
 import PlayerList from '@/components/PlayerList';
