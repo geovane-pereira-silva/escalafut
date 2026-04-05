@@ -91,6 +91,10 @@ export default function Index() {
                 <ClipboardList className="h-4 w-4" />
                 Rodadas
               </TabsTrigger>
+              <TabsTrigger value="analytics" className="font-heading gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Analytics
+              </TabsTrigger>
             </TabsList>
 
             {/* Cadastro Tab */}
