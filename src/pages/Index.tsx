@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Player } from '@/types/player';
 import { usePlayers } from '@/hooks/usePlayers';
+import { useRounds } from '@/hooks/useRounds';
 import { getLastCoachId, setLastCoachId } from '@/lib/storage';
 import { generateTeams } from '@/lib/escalation';
 
@@ -11,10 +12,11 @@ import PlayerRadar from '@/components/PlayerRadar';
 import TeamDisplay from '@/components/TeamDisplay';
 import SelectionView from '@/components/SelectionView';
 import RoundManager from '@/components/RoundManager';
+import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Swords, Trophy, Users, UserPlus, ClipboardList } from 'lucide-react';
+import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3 } from 'lucide-react';
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
