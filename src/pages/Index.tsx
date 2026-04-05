@@ -97,6 +97,10 @@ export default function Index() {
                 <BarChart3 className="h-4 w-4" />
                 Analytics
               </TabsTrigger>
+              <TabsTrigger value="escalacao" className="font-heading gap-2">
+                <Shield className="h-4 w-4" />
+                Escalação
+              </TabsTrigger>
             </TabsList>
 
             {/* Cadastro Tab */}
