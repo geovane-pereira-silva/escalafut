@@ -140,6 +140,15 @@ export default function Index() {
             <TabsContent value="rodadas" className="space-y-6">
               <RoundManager players={players} coachId={coachId} />
             </TabsContent>
+
+            {/* Analytics Tab */}
+            <TabsContent value="analytics" className="space-y-6">
+              <AnalyticsDashboard
+                players={players}
+                rounds={rounds}
+                allPerformances={allPerformances}
+              />
+            </TabsContent>
           </Tabs>
         ) : (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
