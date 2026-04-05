@@ -21,10 +21,16 @@ import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3 } from 'lucid
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
   const { players, loading, savePlayer, deletePlayer } = usePlayers(coachId);
+  const { rounds, fetchAllPerformances } = useRounds(coachId);
+  const [allPerformances, setAllPerformances] = useState<any[]>([]);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showTeams, setShowTeams] = useState(false);
   const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[] } | null>(null);
+
+  useEffect(() => {
+    fetchAllPerformances().then(p => setAllPerformances(p));
+  }, [fetchAllPerformances, rounds]);
 
   const handleLogin = (id: string) => {
     setCoachId(id);
