@@ -34,6 +34,21 @@ export default function Index() {
     fetchAllPerformances().then(p => setAllPerformances(p));
   }, [fetchAllPerformances, rounds]);
 
+  // V-Scores for lineup optimizer
+  const vScores = useMemo(() => {
+    const map: Record<string, number> = {};
+    const finalizedRounds = [...rounds].filter(r => r.status === 'finalized').sort((a, b) => a.roundNumber - b.roundNumber);
+    const roundIds = finalizedRounds.map(r => r.id);
+    for (const player of players) {
+      const history = roundIds
+        .map(rid => allPerformances.find((p: any) => p.playerId === player.id && p.roundId === rid))
+        .filter(Boolean)
+        .map((p: any) => p.pointsCalculated);
+      map[player.id] = calculateVScore(history);
+    }
+    return map;
+  }, [players, rounds, allPerformances]);
+
   const handleLogin = (id: string) => {
     setCoachId(id);
     setLastCoachId(id);
