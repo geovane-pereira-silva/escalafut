@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Player } from '@/types/player';
 import { usePlayers } from '@/hooks/usePlayers';
 import { useRounds } from '@/hooks/useRounds';
@@ -13,10 +13,12 @@ import TeamDisplay from '@/components/TeamDisplay';
 import SelectionView from '@/components/SelectionView';
 import RoundManager from '@/components/RoundManager';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
+import LineupField from '@/components/LineupField';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3 } from 'lucide-react';
+import { calculateVScore } from '@/lib/scoring';
+import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } from 'lucide-react';
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
@@ -31,6 +33,21 @@ export default function Index() {
   useEffect(() => {
     fetchAllPerformances().then(p => setAllPerformances(p));
   }, [fetchAllPerformances, rounds]);
+
+  // V-Scores for lineup optimizer
+  const vScores = useMemo(() => {
+    const map: Record<string, number> = {};
+    const finalizedRounds = [...rounds].filter(r => r.status === 'finalized').sort((a, b) => a.roundNumber - b.roundNumber);
+    const roundIds = finalizedRounds.map(r => r.id);
+    for (const player of players) {
+      const history = roundIds
+        .map(rid => allPerformances.find((p: any) => p.playerId === player.id && p.roundId === rid))
+        .filter(Boolean)
+        .map((p: any) => p.pointsCalculated);
+      map[player.id] = calculateVScore(history);
+    }
+    return map;
+  }, [players, rounds, allPerformances]);
 
   const handleLogin = (id: string) => {
     setCoachId(id);
@@ -95,6 +112,10 @@ export default function Index() {
                 <BarChart3 className="h-4 w-4" />
                 Analytics
               </TabsTrigger>
+              <TabsTrigger value="escalacao" className="font-heading gap-2">
+                <Shield className="h-4 w-4" />
+                Escalação
+              </TabsTrigger>
             </TabsList>
 
             {/* Cadastro Tab */}
@@ -148,6 +169,11 @@ export default function Index() {
                 rounds={rounds}
                 allPerformances={allPerformances}
               />
+            </TabsContent>
+
+            {/* Escalação Tab */}
+            <TabsContent value="escalacao" className="space-y-6">
+              <LineupField players={players} vScores={vScores} />
             </TabsContent>
           </Tabs>
         ) : (
