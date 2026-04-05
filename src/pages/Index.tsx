@@ -13,10 +13,12 @@ import TeamDisplay from '@/components/TeamDisplay';
 import SelectionView from '@/components/SelectionView';
 import RoundManager from '@/components/RoundManager';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
+import LineupField from '@/components/LineupField';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3 } from 'lucide-react';
+import { calculateVScore } from '@/lib/scoring';
+import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } from 'lucide-react';
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
