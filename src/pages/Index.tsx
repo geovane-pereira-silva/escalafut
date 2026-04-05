@@ -170,6 +170,11 @@ export default function Index() {
                 allPerformances={allPerformances}
               />
             </TabsContent>
+
+            {/* Escalação Tab */}
+            <TabsContent value="escalacao" className="space-y-6">
+              <LineupField players={players} vScores={vScores} />
+            </TabsContent>
           </Tabs>
         ) : (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
