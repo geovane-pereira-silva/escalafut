@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Player } from '@/types/player';
 import { usePlayers } from '@/hooks/usePlayers';
+import { useRounds } from '@/hooks/useRounds';
 import { getLastCoachId, setLastCoachId } from '@/lib/storage';
 import { generateTeams } from '@/lib/escalation';
 
@@ -11,18 +12,25 @@ import PlayerRadar from '@/components/PlayerRadar';
 import TeamDisplay from '@/components/TeamDisplay';
 import SelectionView from '@/components/SelectionView';
 import RoundManager from '@/components/RoundManager';
+import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Swords, Trophy, Users, UserPlus, ClipboardList } from 'lucide-react';
+import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3 } from 'lucide-react';
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
   const { players, loading, savePlayer, deletePlayer } = usePlayers(coachId);
+  const { rounds, fetchAllPerformances } = useRounds(coachId);
+  const [allPerformances, setAllPerformances] = useState<any[]>([]);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showTeams, setShowTeams] = useState(false);
   const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[] } | null>(null);
+
+  useEffect(() => {
+    fetchAllPerformances().then(p => setAllPerformances(p));
+  }, [fetchAllPerformances, rounds]);
 
   const handleLogin = (id: string) => {
     setCoachId(id);
@@ -83,6 +91,10 @@ export default function Index() {
                 <ClipboardList className="h-4 w-4" />
                 Rodadas
               </TabsTrigger>
+              <TabsTrigger value="analytics" className="font-heading gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Analytics
+              </TabsTrigger>
             </TabsList>
 
             {/* Cadastro Tab */}
@@ -127,6 +139,15 @@ export default function Index() {
             {/* Rodadas Tab */}
             <TabsContent value="rodadas" className="space-y-6">
               <RoundManager players={players} coachId={coachId} />
+            </TabsContent>
+
+            {/* Analytics Tab */}
+            <TabsContent value="analytics" className="space-y-6">
+              <AnalyticsDashboard
+                players={players}
+                rounds={rounds}
+                allPerformances={allPerformances}
+              />
             </TabsContent>
           </Tabs>
         ) : (
