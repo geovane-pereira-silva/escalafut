@@ -203,6 +203,7 @@ export default function LineupField({ players, vScores }: LineupFieldProps) {
         {/* Field */}
         <div className="lg:col-span-2">
           <div
+            ref={fieldRef}
             className="relative w-full rounded-xl overflow-hidden border border-border/50"
             style={{
               aspectRatio: '3/4',
