@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { Player, POSITIONS, POSITION_LABELS, getPlayerOverall } from '@/types/player';
 import {
   Formation, FORMATIONS, LineupSlot,
@@ -10,8 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Wand2, Trash2, Crown, Star, ArrowRight,
-  Shield, ChevronDown, Users,
+  Shield, ChevronDown, Users, Download, Camera,
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { toast } from 'sonner';
 
 interface LineupFieldProps {
   players: Player[];
