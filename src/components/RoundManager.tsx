@@ -100,6 +100,8 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   const [newRoundNumber, setNewRoundNumber] = useState('');
   const [allPerformances, setAllPerformances] = useState<PlayerPerformance[]>([]);
+  const [showClosureSummary, setShowClosureSummary] = useState(false);
+  const [closureRound, setClosureRound] = useState<Round | null>(null);
 
   const selectedRound = rounds.find(r => r.id === selectedRoundId);
   const isFinalized = selectedRound?.status === 'finalized';
