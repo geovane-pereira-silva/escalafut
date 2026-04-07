@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Plus, Lock, ClipboardList, Flame, Snowflake, TrendingUp } from 'lucide-react';
 import RoundClosureSummary from '@/components/RoundClosureSummary';
-import { Plus, Lock, ClipboardList, Flame, Snowflake, TrendingUp } from 'lucide-react';
 
 interface RoundManagerProps {
   players: Player[];
