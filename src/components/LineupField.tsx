@@ -21,11 +21,13 @@ interface LineupFieldProps {
 }
 
 export default function LineupField({ players, vScores }: LineupFieldProps) {
+  const fieldRef = useRef<HTMLDivElement>(null);
   const [formationName, setFormationName] = useState('4-3-3');
   const [lineup, setLineup] = useState<LineupSlot[]>([]);
   const [captainId, setCaptainId] = useState<string | null>(null);
   const [dragPlayerId, setDragPlayerId] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<'all' | 'best-value' | 'top-scorers' | 'most-picked'>('all');
+  const [exporting, setExporting] = useState(false);
 
   const formation = FORMATIONS.find(f => f.name === formationName) ?? FORMATIONS[0];
   const escalaveisPlayers = players.filter(p => p.escalavel);
