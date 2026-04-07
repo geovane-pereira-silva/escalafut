@@ -160,6 +160,29 @@ export default function LineupField({ players, vScores }: LineupFieldProps) {
           <Trash2 className="h-4 w-4" />
           Limpar Campo
         </Button>
+
+        <Button
+          onClick={async () => {
+            if (!fieldRef.current || filledCount === 0) { toast.error('Escale pelo menos 1 jogador'); return; }
+            setExporting(true);
+            try {
+              const canvas = await html2canvas(fieldRef.current, { scale: 2, backgroundColor: null, useCORS: true });
+              const link = document.createElement('a');
+              link.download = `escalacao-${formationName}-${new Date().toISOString().slice(0, 10)}.png`;
+              link.href = canvas.toDataURL('image/png');
+              link.click();
+              toast.success('Imagem exportada!');
+            } catch {
+              toast.error('Erro ao exportar imagem');
+            } finally { setExporting(false); }
+          }}
+          variant="outline"
+          className="font-heading gap-2"
+          disabled={exporting || filledCount === 0}
+        >
+          <Camera className="h-4 w-4" />
+          Exportar Imagem
+        </Button>
       </div>
 
       {/* Team Score Banner */}
