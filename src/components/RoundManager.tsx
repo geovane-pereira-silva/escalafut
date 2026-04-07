@@ -172,7 +172,16 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
 
   const handleFinalize = async () => {
     if (!selectedRoundId) return;
+    const roundToClose = rounds.find(r => r.id === selectedRoundId);
     await finalizeRound(selectedRoundId);
+    // Refresh performances then show summary
+    const perfs = await fetchPerformances(selectedRoundId);
+    const allP = await fetchAllPerformances();
+    setAllPerformances(allP);
+    if (roundToClose) {
+      setClosureRound({ ...roundToClose, status: 'finalized' });
+      setShowClosureSummary(true);
+    }
   };
 
   const escalaveisPlayers = players.filter(p => p.escalavel);
