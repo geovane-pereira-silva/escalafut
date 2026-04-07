@@ -353,6 +353,18 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
           }}
         />
       )}
+
+      {/* Round Closure Summary */}
+      {closureRound && (
+        <RoundClosureSummary
+          open={showClosureSummary}
+          onClose={() => setShowClosureSummary(false)}
+          round={closureRound}
+          performances={allPerformances}
+          players={players}
+          previousPerformances={allPerformances}
+        />
+      )}
     </div>
   );
 }
