@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
-import { Player, POSITIONS, POSITION_LABELS } from '@/types/player';
+import { Player, POSITIONS, POSITION_LABELS, getPlayerOverall } from '@/types/player';
 import { PlayerPerformance, Round } from '@/hooks/useRounds';
 import { calculateVScore } from '@/lib/scoring';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, AreaChart, Area, ResponsiveContainer } from 'recharts';
-import { Flame, Snowflake, TrendingUp, TrendingDown, Shield, Swords, Target, Activity, BarChart3, Users } from 'lucide-react';
+import { Flame, Snowflake, TrendingUp, TrendingDown, Shield, Swords, Target, Activity, BarChart3, Users, Trophy, Crown, Star, Medal } from 'lucide-react';
 
 interface AnalyticsDashboardProps {
   players: Player[];
