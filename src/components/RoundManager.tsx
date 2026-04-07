@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Plus, Lock, ClipboardList, Flame, Snowflake, TrendingUp } from 'lucide-react';
+import RoundClosureSummary from '@/components/RoundClosureSummary';
+import { Plus, Lock, ClipboardList, Flame, Snowflake, TrendingUp } from 'lucide-react';
 
 interface RoundManagerProps {
   players: Player[];
