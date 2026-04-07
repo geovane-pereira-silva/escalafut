@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { Player, POSITIONS, POSITION_LABELS, getPlayerOverall } from '@/types/player';
 import {
   Formation, FORMATIONS, LineupSlot,
@@ -10,8 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Wand2, Trash2, Crown, Star, ArrowRight,
-  Shield, ChevronDown, Users,
+  Shield, ChevronDown, Users, Download, Camera,
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { toast } from 'sonner';
 
 interface LineupFieldProps {
   players: Player[];
@@ -19,11 +21,13 @@ interface LineupFieldProps {
 }
 
 export default function LineupField({ players, vScores }: LineupFieldProps) {
+  const fieldRef = useRef<HTMLDivElement>(null);
   const [formationName, setFormationName] = useState('4-3-3');
   const [lineup, setLineup] = useState<LineupSlot[]>([]);
   const [captainId, setCaptainId] = useState<string | null>(null);
   const [dragPlayerId, setDragPlayerId] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<'all' | 'best-value' | 'top-scorers' | 'most-picked'>('all');
+  const [exporting, setExporting] = useState(false);
 
   const formation = FORMATIONS.find(f => f.name === formationName) ?? FORMATIONS[0];
   const escalaveisPlayers = players.filter(p => p.escalavel);
@@ -156,6 +160,29 @@ export default function LineupField({ players, vScores }: LineupFieldProps) {
           <Trash2 className="h-4 w-4" />
           Limpar Campo
         </Button>
+
+        <Button
+          onClick={async () => {
+            if (!fieldRef.current || filledCount === 0) { toast.error('Escale pelo menos 1 jogador'); return; }
+            setExporting(true);
+            try {
+              const canvas = await html2canvas(fieldRef.current, { scale: 2, backgroundColor: null, useCORS: true });
+              const link = document.createElement('a');
+              link.download = `escalacao-${formationName}-${new Date().toISOString().slice(0, 10)}.png`;
+              link.href = canvas.toDataURL('image/png');
+              link.click();
+              toast.success('Imagem exportada!');
+            } catch {
+              toast.error('Erro ao exportar imagem');
+            } finally { setExporting(false); }
+          }}
+          variant="outline"
+          className="font-heading gap-2"
+          disabled={exporting || filledCount === 0}
+        >
+          <Camera className="h-4 w-4" />
+          Exportar Imagem
+        </Button>
       </div>
 
       {/* Team Score Banner */}
@@ -176,6 +203,7 @@ export default function LineupField({ players, vScores }: LineupFieldProps) {
         {/* Field */}
         <div className="lg:col-span-2">
           <div
+            ref={fieldRef}
             className="relative w-full rounded-xl overflow-hidden border border-border/50"
             style={{
               aspectRatio: '3/4',

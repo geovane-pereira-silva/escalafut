@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
-import { Player, POSITIONS, POSITION_LABELS } from '@/types/player';
+import { Player, POSITIONS, POSITION_LABELS, getPlayerOverall } from '@/types/player';
 import { PlayerPerformance, Round } from '@/hooks/useRounds';
 import { calculateVScore } from '@/lib/scoring';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, AreaChart, Area, ResponsiveContainer } from 'recharts';
-import { Flame, Snowflake, TrendingUp, TrendingDown, Shield, Swords, Target, Activity, BarChart3, Users } from 'lucide-react';
+import { Flame, Snowflake, TrendingUp, TrendingDown, Shield, Swords, Target, Activity, BarChart3, Users, Trophy, Crown, Star, Medal } from 'lucide-react';
 
 interface AnalyticsDashboardProps {
   players: Player[];
@@ -384,6 +384,141 @@ export default function AnalyticsDashboard({ players, rounds, allPerformances }:
           </CardContent>
         </Card>
       )}
+
+      {/* Dream Team do Ano */}
+      <DreamTeam players={players} vScores={vScores} playerStats={playerStats} finalizedRounds={finalizedRounds} allPerformances={allPerformances} />
     </div>
+  );
+}
+
+/* ==============================
+   Dream Team do Ano
+   ============================== */
+interface DreamTeamProps {
+  players: Player[];
+  vScores: Record<string, number>;
+  playerStats: Record<string, { stdDev: number; avg: number; trend: 'hot' | 'cold' | 'neutral'; ci: number; history: number[] }>;
+  finalizedRounds: Round[];
+  allPerformances: PlayerPerformance[];
+}
+
+// Best XI positions: 1 GK, 2 DEF, 2 MID, 2 ATK (flexible for available pool)
+const DREAM_SLOTS: { group: PosGroup; label: string; count: number }[] = [
+  { group: 'GK', label: 'Goleiro', count: 1 },
+  { group: 'DEF', label: 'Defesa', count: 3 },
+  { group: 'MID', label: 'Meio', count: 3 },
+  { group: 'ATK', label: 'Ataque', count: 4 },
+];
+
+function DreamTeam({ players, vScores, playerStats, finalizedRounds, allPerformances }: DreamTeamProps) {
+  const dreamTeam = useMemo(() => {
+    const selected: (Player & { vScore: number })[] = [];
+    const used = new Set<string>();
+
+    for (const slot of DREAM_SLOTS) {
+      const candidates = players
+        .filter(p => getPosGroup(p.positionPrimary) === slot.group && !used.has(p.id) && (vScores[p.id] ?? 0) > 0)
+        .sort((a, b) => (vScores[b.id] ?? 0) - (vScores[a.id] ?? 0));
+
+      for (let i = 0; i < Math.min(slot.count, candidates.length); i++) {
+        selected.push({ ...candidates[i], vScore: vScores[candidates[i].id] ?? 0 });
+        used.add(candidates[i].id);
+      }
+    }
+    return selected;
+  }, [players, vScores]);
+
+  // Awards
+  const awards = useMemo(() => {
+    const withData = players.filter(p => (playerStats[p.id]?.history.length ?? 0) >= 1);
+    if (!withData.length) return [];
+
+    const items: { icon: typeof Trophy; label: string; player: Player; value: string }[] = [];
+
+    // MVP - highest V-Score
+    const mvp = [...withData].sort((a, b) => (vScores[b.id] ?? 0) - (vScores[a.id] ?? 0))[0];
+    if (mvp) items.push({ icon: Trophy, label: 'MVP do Ano', player: mvp, value: `V ${(vScores[mvp.id] ?? 0).toFixed(1)}` });
+
+    // Most consistent
+    const consistent = withData
+      .filter(p => (playerStats[p.id]?.history.length ?? 0) >= 3)
+      .sort((a, b) => (playerStats[b.id]?.ci ?? 0) - (playerStats[a.id]?.ci ?? 0))[0];
+    if (consistent) items.push({ icon: Shield, label: 'Mais Consistente', player: consistent, value: `CI ${playerStats[consistent.id]?.ci.toFixed(1)}` });
+
+    // Biggest climber (most improvement last 3 vs first 3)
+    const climbers = withData
+      .filter(p => (playerStats[p.id]?.history.length ?? 0) >= 4)
+      .map(p => {
+        const h = playerStats[p.id]!.history;
+        const first3 = h.slice(0, 3).reduce((s, v) => s + v, 0) / 3;
+        const last3 = h.slice(-3).reduce((s, v) => s + v, 0) / 3;
+        return { player: p, improvement: last3 - first3 };
+      })
+      .sort((a, b) => b.improvement - a.improvement);
+    if (climbers.length > 0 && climbers[0].improvement > 0) {
+      items.push({ icon: TrendingUp, label: 'Maior Evolução', player: climbers[0].player, value: `+${climbers[0].improvement.toFixed(1)}` });
+    }
+
+    // Top scorer (most total points)
+    const totalPoints: Record<string, number> = {};
+    for (const perf of allPerformances) {
+      totalPoints[perf.playerId] = (totalPoints[perf.playerId] ?? 0) + perf.pointsCalculated;
+    }
+    const topScorer = withData.sort((a, b) => (totalPoints[b.id] ?? 0) - (totalPoints[a.id] ?? 0))[0];
+    if (topScorer && (totalPoints[topScorer.id] ?? 0) > 0) {
+      items.push({ icon: Star, label: 'Artilheiro de Pontos', player: topScorer, value: `${(totalPoints[topScorer.id] ?? 0).toFixed(1)} pts` });
+    }
+
+    return items;
+  }, [players, vScores, playerStats, allPerformances]);
+
+  if (dreamTeam.length === 0) return null;
+
+  return (
+    <Card className="border-primary/30 bg-gradient-to-br from-card via-card to-primary/5">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg font-heading text-primary flex items-center gap-2">
+          <Crown className="h-5 w-5" />
+          Dream Team do Ano
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        {/* Awards */}
+        {awards.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {awards.map((award, i) => {
+              const Icon = award.icon;
+              return (
+                <div key={i} className="flex flex-col items-center p-3 rounded-lg bg-primary/5 border border-primary/10 text-center">
+                  <Icon className="h-6 w-6 text-primary mb-1" />
+                  <p className="text-[10px] font-heading text-muted-foreground uppercase tracking-wider">{award.label}</p>
+                  <p className="text-sm font-heading text-foreground truncate max-w-full">{award.player.name}</p>
+                  <Badge variant="secondary" className="text-[10px] mt-1">{award.value}</Badge>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Best XI list */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {dreamTeam.map((p, i) => (
+            <div key={p.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/30 border border-border/30">
+              <span className="text-xs font-heading text-muted-foreground w-5 text-right">
+                {i === 0 ? '🏆' : `#${i + 1}`}
+              </span>
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{p.positionPrimary}</Badge>
+              <span className="text-sm font-medium flex-1 truncate">{p.name}</span>
+              <span className="text-sm font-mono text-primary">{p.vScore.toFixed(1)}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Season summary */}
+        <div className="text-xs text-muted-foreground text-center pt-2 border-t border-border/30">
+          Baseado em {finalizedRounds.length} rodada{finalizedRounds.length !== 1 ? 's' : ''} finalizada{finalizedRounds.length !== 1 ? 's' : ''}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

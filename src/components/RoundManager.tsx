@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Plus, Lock, ClipboardList, Flame, Snowflake, TrendingUp } from 'lucide-react';
+import RoundClosureSummary from '@/components/RoundClosureSummary';
 
 interface RoundManagerProps {
   players: Player[];
@@ -98,6 +99,8 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   const [newRoundNumber, setNewRoundNumber] = useState('');
   const [allPerformances, setAllPerformances] = useState<PlayerPerformance[]>([]);
+  const [showClosureSummary, setShowClosureSummary] = useState(false);
+  const [closureRound, setClosureRound] = useState<Round | null>(null);
 
   const selectedRound = rounds.find(r => r.id === selectedRoundId);
   const isFinalized = selectedRound?.status === 'finalized';
@@ -168,7 +171,16 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
 
   const handleFinalize = async () => {
     if (!selectedRoundId) return;
+    const roundToClose = rounds.find(r => r.id === selectedRoundId);
     await finalizeRound(selectedRoundId);
+    // Refresh performances then show summary
+    const perfs = await fetchPerformances(selectedRoundId);
+    const allP = await fetchAllPerformances();
+    setAllPerformances(allP);
+    if (roundToClose) {
+      setClosureRound({ ...roundToClose, status: 'finalized' });
+      setShowClosureSummary(true);
+    }
   };
 
   const escalaveisPlayers = players.filter(p => p.escalavel);
@@ -339,6 +351,18 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
             const updated = await fetchAllPerformances();
             setAllPerformances(updated);
           }}
+        />
+      )}
+
+      {/* Round Closure Summary */}
+      {closureRound && (
+        <RoundClosureSummary
+          open={showClosureSummary}
+          onClose={() => setShowClosureSummary(false)}
+          round={closureRound}
+          performances={allPerformances}
+          players={players}
+          previousPerformances={allPerformances}
         />
       )}
     </div>
