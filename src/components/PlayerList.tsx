@@ -6,12 +6,12 @@ import { Pencil, UserCheck, UserX } from 'lucide-react';
 interface PlayerListProps {
   players: Player[];
   onEdit: (player: Player) => void;
-  onToggleActive: (player: Player) => void;
+  onToggleEscalavel: (player: Player) => void;
   onSelect: (player: Player) => void;
   selectedId?: string;
 }
 
-export default function PlayerList({ players, onEdit, onToggleActive, onSelect, selectedId }: PlayerListProps) {
+export default function PlayerList({ players, onEdit, onToggleEscalavel, onSelect, selectedId }: PlayerListProps) {
   const activePlayers = players.filter(p => p.active);
   const inactivePlayers = players.filter(p => !p.active);
 
@@ -53,17 +53,19 @@ export default function PlayerList({ players, onEdit, onToggleActive, onSelect, 
         >
           <Pencil className="h-3.5 w-3.5" />
         </Button>
-        <button
-          onClick={e => { e.stopPropagation(); onToggleActive(p); }}
-          className={`flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors ${
-            p.active
-              ? 'bg-accent/20 text-accent hover:bg-accent/30'
-              : 'bg-destructive/20 text-destructive hover:bg-destructive/30'
-          }`}
-        >
-          {p.active ? <UserCheck className="h-3.5 w-3.5" /> : <UserX className="h-3.5 w-3.5" />}
-          {p.active ? 'Disponível' : 'Inativo'}
-        </button>
+        {p.active && (
+          <button
+            onClick={e => { e.stopPropagation(); onToggleEscalavel(p); }}
+            className={`flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors ${
+              p.escalavel
+                ? 'bg-accent/20 text-accent hover:bg-accent/30'
+                : 'bg-destructive/20 text-destructive hover:bg-destructive/30'
+            }`}
+          >
+            {p.escalavel ? <UserCheck className="h-3.5 w-3.5" /> : <UserX className="h-3.5 w-3.5" />}
+            {p.escalavel ? 'Disponível' : 'Indisponível'}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -75,7 +77,7 @@ export default function PlayerList({ players, onEdit, onToggleActive, onSelect, 
           Jogadores ({players.length})
         </h2>
         <Badge variant="secondary" className="font-heading">
-          {activePlayers.length} Ativos
+          {activePlayers.filter(p => p.escalavel).length} Disponíveis
         </Badge>
       </div>
 
