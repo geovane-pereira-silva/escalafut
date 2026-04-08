@@ -60,10 +60,8 @@ export default function Index() {
     if (selectedPlayer?.id === player.id) setSelectedPlayer(player);
   };
 
-  const handleDelete = async (id: string) => {
-    await deletePlayer(id);
-    if (selectedPlayer?.id === id) setSelectedPlayer(null);
-    if (editingPlayer?.id === id) setEditingPlayer(null);
+  const handleToggleActive = async (player: Player) => {
+    await savePlayer({ ...player, active: !player.active });
   };
 
 
