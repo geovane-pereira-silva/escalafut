@@ -12,6 +12,13 @@ const MIN_REQUIREMENTS: MinReq[] = [
 // At least 1 CA or PO each team
 const MIN_ATTACK = 1;
 
+// Ensure each team has at least 1 LE and 1 LD (can use secondary position or adapt)
+function ensureLaterals(team: Player[]): boolean {
+  const hasLE = team.some(p => p.positionPrimary === 'LE' || p.positionSecondary === 'LE' || p.positionPrimary === 'LD');
+  const hasLD = team.some(p => p.positionPrimary === 'LD' || p.positionSecondary === 'LD' || p.positionPrimary === 'LE');
+  return hasLE && hasLD;
+}
+
 function teamSectorAvg(team: Player[], sector: string): number {
   if (!team.length) return 0;
   return team.reduce((s, p) => s + getSectorAvg(p, sector), 0) / team.length;
