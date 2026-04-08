@@ -38,7 +38,6 @@ export function usePlayers(coachId: string | null) {
     const { data, error } = await supabase
       .from('players')
       .select('*')
-      .eq('coach_id', coachId)
       .order('name');
     setLoading(false);
     if (error) { toast.error('Erro ao carregar jogadores'); return; }
