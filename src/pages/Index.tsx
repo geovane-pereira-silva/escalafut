@@ -129,7 +129,7 @@ export default function Index() {
                   <PlayerList
                     players={players}
                     onEdit={setEditingPlayer}
-                    onDelete={handleDelete}
+                    onToggleActive={handleToggleActive}
                     onSelect={setSelectedPlayer}
                     selectedId={selectedPlayer?.id}
                   />
