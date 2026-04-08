@@ -22,7 +22,7 @@ import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } fro
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
-  const { players, loading, savePlayer, deletePlayer } = usePlayers(coachId);
+  const { players, loading, savePlayer } = usePlayers(coachId);
   const { rounds, fetchAllPerformances } = useRounds(coachId);
   const [allPerformances, setAllPerformances] = useState<any[]>([]);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
