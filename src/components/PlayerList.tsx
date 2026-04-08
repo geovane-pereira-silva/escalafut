@@ -1,27 +1,72 @@
 import { Player, POSITIONS, POSITION_LABELS, getPlayerOverall } from '@/types/player';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, UserCheck, UserX } from 'lucide-react';
 
 interface PlayerListProps {
   players: Player[];
   onEdit: (player: Player) => void;
-  onDelete: (id: string) => void;
+  onToggleActive: (player: Player) => void;
   onSelect: (player: Player) => void;
   selectedId?: string;
 }
 
-export default function PlayerList({ players, onEdit, onDelete, onSelect, selectedId }: PlayerListProps) {
-  // Group by position, ordered
-  const grouped = POSITIONS.map(pos => ({
-    pos,
-    label: POSITION_LABELS[pos],
-    players: players
-      .filter(p => p.positionPrimary === pos)
-      .sort((a, b) => a.name.localeCompare(b.name)),
-  })).filter(g => g.players.length > 0);
+export default function PlayerList({ players, onEdit, onToggleActive, onSelect, selectedId }: PlayerListProps) {
+  const activePlayers = players.filter(p => p.active);
+  const inactivePlayers = players.filter(p => !p.active);
 
-  const activeCount = players.filter(p => p.active).length;
+  const groupByPosition = (list: Player[]) =>
+    POSITIONS.map(pos => ({
+      pos,
+      label: POSITION_LABELS[pos],
+      players: list.filter(p => p.positionPrimary === pos).sort((a, b) => a.name.localeCompare(b.name)),
+    })).filter(g => g.players.length > 0);
+
+  const groupedActive = groupByPosition(activePlayers);
+
+  const renderPlayer = (p: Player) => (
+    <div
+      key={p.id}
+      onClick={() => onSelect(p)}
+      className={`flex items-center justify-between p-2.5 rounded-md cursor-pointer transition-colors border ${
+        selectedId === p.id
+          ? 'border-primary bg-primary/10'
+          : 'border-transparent bg-muted/40 hover:bg-muted/70'
+      } ${!p.active ? 'opacity-50' : ''}`}
+    >
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="text-sm font-medium truncate">{p.name}</span>
+        {p.positionSecondary && (
+          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+            {p.positionSecondary}
+          </Badge>
+        )}
+        <span className="text-xs text-muted-foreground">
+          OVR {getPlayerOverall(p).toFixed(1)}
+        </span>
+      </div>
+      <div className="flex gap-1 shrink-0">
+        <Button
+          size="icon" variant="ghost"
+          className="h-7 w-7 text-warning hover:text-warning"
+          onClick={e => { e.stopPropagation(); onEdit(p); }}
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </Button>
+        <button
+          onClick={e => { e.stopPropagation(); onToggleActive(p); }}
+          className={`flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors ${
+            p.active
+              ? 'bg-accent/20 text-accent hover:bg-accent/30'
+              : 'bg-destructive/20 text-destructive hover:bg-destructive/30'
+          }`}
+        >
+          {p.active ? <UserCheck className="h-3.5 w-3.5" /> : <UserX className="h-3.5 w-3.5" />}
+          {p.active ? 'Disponível' : 'Inativo'}
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-4">
@@ -30,58 +75,31 @@ export default function PlayerList({ players, onEdit, onDelete, onSelect, select
           Jogadores ({players.length})
         </h2>
         <Badge variant="secondary" className="font-heading">
-          {activeCount} Ativos
+          {activePlayers.length} Ativos
         </Badge>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {grouped.map(g => (
+        {groupedActive.map(g => (
           <div key={g.pos} className="space-y-2">
             <h3 className="text-sm font-heading text-primary tracking-wider border-b border-border pb-1">
               {g.pos} — {g.label}
             </h3>
-            {g.players.map(p => (
-              <div
-                key={p.id}
-                onClick={() => onSelect(p)}
-                className={`flex items-center justify-between p-2.5 rounded-md cursor-pointer transition-colors border ${
-                  selectedId === p.id
-                    ? 'border-primary bg-primary/10'
-                    : 'border-transparent bg-muted/40 hover:bg-muted/70'
-                } ${!p.active ? 'opacity-50' : ''}`}
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-sm font-medium truncate">{p.name}</span>
-                  {p.positionSecondary && (
-                    <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                      {p.positionSecondary}
-                    </Badge>
-                  )}
-                  <span className="text-xs text-muted-foreground">
-                    OVR {getPlayerOverall(p).toFixed(1)}
-                  </span>
-                </div>
-                <div className="flex gap-1 shrink-0">
-                  <Button
-                    size="icon" variant="ghost"
-                    className="h-7 w-7 text-warning hover:text-warning"
-                    onClick={e => { e.stopPropagation(); onEdit(p); }}
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    size="icon" variant="ghost"
-                    className="h-7 w-7 text-destructive hover:text-destructive"
-                    onClick={e => { e.stopPropagation(); onDelete(p.id); }}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+            {g.players.map(renderPlayer)}
           </div>
         ))}
       </div>
+
+      {inactivePlayers.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-heading text-destructive tracking-wider border-b border-destructive/30 pb-1">
+            Inativos ({inactivePlayers.length})
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {inactivePlayers.sort((a, b) => a.name.localeCompare(b.name)).map(renderPlayer)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

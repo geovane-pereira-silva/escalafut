@@ -22,7 +22,7 @@ import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } fro
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
-  const { players, loading, savePlayer, deletePlayer } = usePlayers(coachId);
+  const { players, loading, savePlayer } = usePlayers(coachId);
   const { rounds, fetchAllPerformances } = useRounds(coachId);
   const [allPerformances, setAllPerformances] = useState<any[]>([]);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
@@ -60,10 +60,8 @@ export default function Index() {
     if (selectedPlayer?.id === player.id) setSelectedPlayer(player);
   };
 
-  const handleDelete = async (id: string) => {
-    await deletePlayer(id);
-    if (selectedPlayer?.id === id) setSelectedPlayer(null);
-    if (editingPlayer?.id === id) setEditingPlayer(null);
+  const handleToggleActive = async (player: Player) => {
+    await savePlayer({ ...player, active: !player.active });
   };
 
 
@@ -131,7 +129,7 @@ export default function Index() {
                   <PlayerList
                     players={players}
                     onEdit={setEditingPlayer}
-                    onDelete={handleDelete}
+                    onToggleActive={handleToggleActive}
                     onSelect={setSelectedPlayer}
                     selectedId={selectedPlayer?.id}
                   />
