@@ -1,8 +1,19 @@
-import { Player, POSITION_LABELS, getPlayerOverall, getSectorAvg } from '@/types/player';
+import { Player, Position, POSITION_LABELS, getPlayerOverall, getSectorAvg } from '@/types/player';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+
+const POSITION_ORDER: Position[] = ['GL', 'ZG', 'LE', 'LD', 'VO', 'ME', 'PO', 'CA'];
+
+function sortByPosition(players: Player[]): Player[] {
+  return [...players].sort((a, b) => {
+    const ia = POSITION_ORDER.indexOf(a.positionPrimary);
+    const ib = POSITION_ORDER.indexOf(b.positionPrimary);
+    if (ia !== ib) return ia - ib;
+    return a.name.localeCompare(b.name);
+  });
+}
 
 interface TeamDisplayProps {
   open: boolean;
@@ -11,11 +22,14 @@ interface TeamDisplayProps {
   teamB: Player[];
 }
 
-function TeamColumn({ team, label, colorClass }: { team: Player[]; label: string; colorClass: string }) {
+function TeamColumn({ team, label, colorClass, align }: { team: Player[]; label: string; colorClass: string; align: 'left' | 'right' }) {
   const sectors = ['tecnico', 'fisico', 'tatico', 'psicologico'];
   const sectorLabels: Record<string, string> = {
     tecnico: 'TEC', fisico: 'FIS', tatico: 'TAT', psicologico: 'PSI',
   };
+
+  const sorted = sortByPosition(team);
+  const isRight = align === 'right';
 
   return (
     <div className="flex-1 space-y-3">
@@ -33,9 +47,12 @@ function TeamColumn({ team, label, colorClass }: { team: Player[]; label: string
         })}
       </div>
       <div className="space-y-1.5">
-        {team.map(p => (
-          <div key={p.id} className="flex items-center justify-between bg-muted/40 rounded px-3 py-1.5 text-sm">
-            <div className="flex items-center gap-2">
+        {sorted.map(p => (
+          <div
+            key={p.id}
+            className={`flex items-center justify-between bg-muted/40 rounded px-3 py-1.5 text-sm ${isRight ? 'flex-row-reverse' : ''}`}
+          >
+            <div className={`flex items-center gap-2 ${isRight ? 'flex-row-reverse' : ''}`}>
               <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-heading">
                 {p.positionPrimary}
               </Badge>
@@ -60,8 +77,8 @@ export default function TeamDisplay({ open, onClose, teamA, teamB }: TeamDisplay
           </Button>
         </DialogHeader>
         <div className="flex gap-4 mt-2">
-          <TeamColumn team={teamA} label="Time Azul" colorClass="team-blue-bg" />
-          <TeamColumn team={teamB} label="Time Vermelho" colorClass="team-red-bg" />
+          <TeamColumn team={teamA} label="Time Azul" colorClass="team-blue-bg" align="left" />
+          <TeamColumn team={teamB} label="Time Vermelho" colorClass="team-red-bg" align="right" />
         </div>
       </DialogContent>
     </Dialog>

@@ -48,7 +48,9 @@ export function usePlayers(coachId: string | null) {
 
   const savePlayer = useCallback(async (player: Player) => {
     if (!coachId) return;
-    const row = playerToDb(player, coachId);
+    // Auto-capitalize player name
+    const capitalized = { ...player, name: player.name.replace(/\b\w/g, c => c.toUpperCase()) };
+    const row = playerToDb(capitalized, coachId);
     const { error } = await supabase.from('players').upsert(row, { onConflict: 'id' });
     if (error) { toast.error('Erro ao salvar jogador'); return; }
     await fetchPlayers();
