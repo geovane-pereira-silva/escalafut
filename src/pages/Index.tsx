@@ -27,6 +27,7 @@ export default function Index() {
   const [allPerformances, setAllPerformances] = useState<any[]>([]);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const [showTeams, setShowTeams] = useState(false);
   const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[] } | null>(null);
 
@@ -58,17 +59,33 @@ export default function Index() {
   const handleSave = async (player: Player) => {
     await savePlayer(player);
     if (selectedPlayer?.id === player.id) setSelectedPlayer(player);
+    // Collapse form after save
+    setShowForm(false);
+    setEditingPlayer(null);
   };
 
-  const handleToggleActive = async (player: Player) => {
-    await savePlayer({ ...player, active: !player.active });
+  const handleEdit = (player: Player) => {
+    setEditingPlayer(player);
+    setShowForm(true);
   };
 
+  const handleToggleEscalavel = async (player: Player) => {
+    await savePlayer({ ...player, escalavel: !player.escalavel });
+  };
 
+  const handleCancelEdit = () => {
+    setEditingPlayer(null);
+    setShowForm(false);
+  };
+
+  const handleNewPlayer = () => {
+    setEditingPlayer(null);
+    setShowForm(true);
+  };
 
   const handleEscalar = () => {
     try {
-      const escalaveisAtivos = players.filter(p => p.escalavel);
+      const escalaveisAtivos = players.filter(p => p.escalavel && p.active);
       const result = generateTeams(escalaveisAtivos);
       setTeams(result);
       setShowTeams(true);
@@ -77,7 +94,7 @@ export default function Index() {
     }
   };
 
-  const activeCount = players.filter(p => p.escalavel).length;
+  const activeCount = players.filter(p => p.escalavel && p.active).length;
 
   return (
     <div className="min-h-screen gradient-pitch">
@@ -118,23 +135,36 @@ export default function Index() {
 
             {/* Cadastro Tab */}
             <TabsContent value="cadastro" className="space-y-6">
-              <PlayerForm
-                onSave={handleSave}
-                editingPlayer={editingPlayer}
-                onCancelEdit={() => setEditingPlayer(null)}
-              />
+              {/* Add player button */}
+              {!showForm && (
+                <Button onClick={handleNewPlayer} className="gradient-gold text-primary-foreground font-heading gap-2">
+                  <UserPlus className="h-4 w-4" />
+                  Adicionar Jogador
+                </Button>
+              )}
+
+              {/* Collapsible form */}
+              {showForm && (
+                <PlayerForm
+                  onSave={handleSave}
+                  editingPlayer={editingPlayer}
+                  onCancelEdit={handleCancelEdit}
+                />
+              )}
+
+              {/* Radar fixed + list scrollable */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <PlayerRadar player={selectedPlayer} />
-                <div className="space-y-4">
+                <div className="lg:sticky lg:top-6 lg:self-start">
+                  <PlayerRadar player={selectedPlayer} />
+                </div>
+                <div className="max-h-[70vh] overflow-y-auto pr-1">
                   <PlayerList
                     players={players}
-                    onEdit={setEditingPlayer}
-                    onToggleActive={handleToggleActive}
+                    onEdit={handleEdit}
+                    onToggleEscalavel={handleToggleEscalavel}
                     onSelect={setSelectedPlayer}
                     selectedId={selectedPlayer?.id}
                   />
-
-
                 </div>
               </div>
             </TabsContent>
