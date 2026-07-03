@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { Player, POSITIONS, getPlayerOverall } from '@/types/player';
 import {
   Formation, FORMATIONS, LineupSlot,
@@ -44,6 +44,15 @@ export default function LineupField({ players, vScores }: LineupFieldProps) {
     const f = FORMATIONS.find(ff => ff.name === name) ?? FORMATIONS[0];
     initSlots(f);
   };
+
+  // Ensure lineup slots are always in sync with the current formation length
+  useEffect(() => {
+    setLineup(prev => {
+      if (prev.length === formation.slots.length) return prev;
+      return formation.slots.map((_, i) => prev[i] ?? { slotIndex: i, player: null });
+    });
+  }, [formation]);
+
 
   const handleAutoFill = () => {
     const result = optimizeLineup(formation, escalaveisPlayers, vScores);
