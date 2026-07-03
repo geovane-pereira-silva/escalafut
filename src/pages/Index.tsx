@@ -21,6 +21,16 @@ import { toast } from 'sonner';
 import { calculateVScore } from '@/lib/scoring';
 import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } from 'lucide-react';
 
+function LazyFallback() {
+  return (
+    <div className="space-y-3">
+      <Skeleton className="h-8 w-1/3" />
+      <Skeleton className="h-32 w-full" />
+      <Skeleton className="h-32 w-full" />
+    </div>
+  );
+}
+
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
   const { players, loading, savePlayer } = usePlayers(coachId);
