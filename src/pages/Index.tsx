@@ -188,21 +188,27 @@ export default function Index() {
 
             {/* Rodadas Tab */}
             <TabsContent value="rodadas" className="space-y-6">
-              <RoundManager players={players} coachId={coachId} />
+              <Suspense fallback={<LazyFallback />}>
+                <RoundManager players={players} coachId={coachId} />
+              </Suspense>
             </TabsContent>
 
             {/* Analytics Tab */}
             <TabsContent value="analytics" className="space-y-6">
-              <AnalyticsDashboard
-                players={players}
-                rounds={rounds}
-                allPerformances={allPerformances}
-              />
+              <Suspense fallback={<LazyFallback />}>
+                <AnalyticsDashboard
+                  players={players}
+                  rounds={rounds}
+                  allPerformances={allPerformances}
+                />
+              </Suspense>
             </TabsContent>
 
             {/* Escalação Tab */}
             <TabsContent value="escalacao" className="space-y-6">
-              <LineupField players={players} vScores={vScores} />
+              <Suspense fallback={<LazyFallback />}>
+                <LineupField players={players} vScores={vScores} />
+              </Suspense>
             </TabsContent>
           </Tabs>
         ) : (
