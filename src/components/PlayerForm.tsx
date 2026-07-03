@@ -5,7 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { Player, Position, POSITIONS, POSITION_LABELS, getVisibleSkills, SKILL_LABELS } from '@/types/player';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Player, Position, POSITIONS, POSITION_LABELS, getVisibleSkills, SKILL_LABELS, SKILL_SECTORS } from '@/types/player';
 import { toast } from 'sonner';
 import { UserPlus, Save } from 'lucide-react';
 
@@ -103,26 +104,53 @@ export default function PlayerForm({ onSave, editingPlayer, onCancelEdit }: Play
         </div>
       </div>
 
-      {/* Skills */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-heading text-muted-foreground tracking-wider">Habilidades</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
-          {visibleSkills.map(sk => (
-            <div key={sk} className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground w-28 shrink-0 truncate" title={SKILL_LABELS[sk]}>
-                {SKILL_LABELS[sk]}
-              </span>
-              <Slider
-                min={0} max={20} step={1}
-                value={[skills[sk] ?? 0]}
-                onValueChange={([v]) => setSkills(prev => ({ ...prev, [sk]: v }))}
-                className="flex-1"
-              />
-              <span className="text-xs font-mono text-primary w-6 text-right">{skills[sk] ?? 0}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Skills grouped by sector */}
+      {(() => {
+        const SECTOR_LABELS: Record<string, string> = {
+          tecnico: 'Técnico',
+          fisico: 'Físico',
+          tatico: 'Tático',
+          psicologico: 'Psicológico',
+          geral: 'Geral',
+          goleiro: 'Goleiro',
+        };
+        const order = ['tecnico', 'fisico', 'tatico', 'psicologico', 'geral', 'goleiro'];
+        const grouped: Record<string, string[]> = {};
+        for (const sk of visibleSkills) {
+          const s = SKILL_SECTORS[sk] ?? 'geral';
+          (grouped[s] ||= []).push(sk);
+        }
+        const sectors = order.filter(s => grouped[s]?.length);
+        return (
+          <Accordion type="multiple" defaultValue={['tecnico']} className="w-full">
+            {sectors.map(sector => (
+              <AccordionItem key={sector} value={sector}>
+                <AccordionTrigger className="text-sm font-heading text-primary tracking-wider min-h-[44px]">
+                  {SECTOR_LABELS[sector]} <span className="text-xs text-muted-foreground ml-2">({grouped[sector].length})</span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3 pt-2">
+                    {grouped[sector].map(sk => (
+                      <div key={sk} className="flex items-center gap-3">
+                        <span className="text-xs text-muted-foreground w-28 shrink-0 truncate" title={SKILL_LABELS[sk]}>
+                          {SKILL_LABELS[sk]}
+                        </span>
+                        <Slider
+                          min={0} max={20} step={1}
+                          value={[skills[sk] ?? 0]}
+                          onValueChange={([v]) => setSkills(prev => ({ ...prev, [sk]: v }))}
+                          className="flex-1"
+                        />
+                        <span className="text-xs font-mono text-primary w-6 text-right">{skills[sk] ?? 0}</span>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        );
+      })()}
 
       <div className="flex gap-3">
         <Button type="submit" className="gradient-gold text-primary-foreground font-heading gap-2">
