@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, lazy, Suspense } from 'react';
 import { Player } from '@/types/player';
 import { usePlayers } from '@/hooks/usePlayers';
 import { useRounds } from '@/hooks/useRounds';
@@ -11,14 +11,25 @@ import PlayerList from '@/components/PlayerList';
 import PlayerRadar from '@/components/PlayerRadar';
 import TeamDisplay from '@/components/TeamDisplay';
 import SelectionView from '@/components/SelectionView';
-import RoundManager from '@/components/RoundManager';
-import AnalyticsDashboard from '@/components/AnalyticsDashboard';
-import LineupField from '@/components/LineupField';
+const RoundManager = lazy(() => import('@/components/RoundManager'));
+const AnalyticsDashboard = lazy(() => import('@/components/AnalyticsDashboard'));
+const LineupField = lazy(() => import('@/components/LineupField'));
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { calculateVScore } from '@/lib/scoring';
 import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } from 'lucide-react';
+
+function LazyFallback() {
+  return (
+    <div className="space-y-3">
+      <Skeleton className="h-8 w-1/3" />
+      <Skeleton className="h-32 w-full" />
+      <Skeleton className="h-32 w-full" />
+    </div>
+  );
+}
 
 export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
@@ -187,21 +198,27 @@ export default function Index() {
 
             {/* Rodadas Tab */}
             <TabsContent value="rodadas" className="space-y-6">
-              <RoundManager players={players} coachId={coachId} />
+              <Suspense fallback={<LazyFallback />}>
+                <RoundManager players={players} coachId={coachId} />
+              </Suspense>
             </TabsContent>
 
             {/* Analytics Tab */}
             <TabsContent value="analytics" className="space-y-6">
-              <AnalyticsDashboard
-                players={players}
-                rounds={rounds}
-                allPerformances={allPerformances}
-              />
+              <Suspense fallback={<LazyFallback />}>
+                <AnalyticsDashboard
+                  players={players}
+                  rounds={rounds}
+                  allPerformances={allPerformances}
+                />
+              </Suspense>
             </TabsContent>
 
             {/* Escalação Tab */}
             <TabsContent value="escalacao" className="space-y-6">
-              <LineupField players={players} vScores={vScores} />
+              <Suspense fallback={<LazyFallback />}>
+                <LineupField players={players} vScores={vScores} />
+              </Suspense>
             </TabsContent>
           </Tabs>
         ) : (
