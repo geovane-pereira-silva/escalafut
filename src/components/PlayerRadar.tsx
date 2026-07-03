@@ -24,7 +24,7 @@ export default function PlayerRadar({ player }: PlayerRadarProps) {
   return (
     <div className="bg-card border border-border rounded-lg p-4">
       <h2 className="text-lg font-heading text-primary mb-2">{player.name} — Radar</h2>
-      <div className="h-[50vh] min-h-[320px]">
+      <div className="w-full h-[38vh] min-h-[240px] max-h-[320px] sm:h-[50vh] sm:max-h-[500px]">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={data} cx="50%" cy="50%" outerRadius="75%">
             <PolarGrid stroke="hsl(150 12% 25%)" />

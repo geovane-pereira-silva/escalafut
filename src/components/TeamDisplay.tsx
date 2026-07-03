@@ -76,7 +76,7 @@ export default function TeamDisplay({ open, onClose, teamA, teamB }: TeamDisplay
             <X className="h-5 w-5" />
           </Button>
         </DialogHeader>
-        <div className="flex gap-4 mt-2">
+        <div className="flex flex-col sm:flex-row gap-4 mt-2">
           <TeamColumn team={teamA} label="Time Azul" colorClass="team-blue-bg" align="left" />
           <TeamColumn team={teamB} label="Time Vermelho" colorClass="team-red-bg" align="right" />
         </div>

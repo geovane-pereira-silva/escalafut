@@ -110,26 +110,26 @@ export default function Index() {
 
         {coachId ? (
           <Tabs defaultValue="cadastro" className="space-y-6">
-            <TabsList className="bg-card border border-border">
-              <TabsTrigger value="cadastro" className="font-heading gap-2">
+            <TabsList className="bg-card border border-border h-auto flex w-full justify-between sm:justify-center sm:w-auto">
+              <TabsTrigger value="cadastro" aria-label="Cadastro" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
                 <UserPlus className="h-4 w-4" />
-                Cadastro
+                <span className="hidden sm:inline">Cadastro</span>
               </TabsTrigger>
-              <TabsTrigger value="selecao" className="font-heading gap-2">
+              <TabsTrigger value="selecao" aria-label="Seleção" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
                 <Users className="h-4 w-4" />
-                Seleção
+                <span className="hidden sm:inline">Seleção</span>
               </TabsTrigger>
-              <TabsTrigger value="rodadas" className="font-heading gap-2">
+              <TabsTrigger value="rodadas" aria-label="Rodadas" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
                 <ClipboardList className="h-4 w-4" />
-                Rodadas
+                <span className="hidden sm:inline">Rodadas</span>
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="font-heading gap-2">
+              <TabsTrigger value="analytics" aria-label="Analytics" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
                 <BarChart3 className="h-4 w-4" />
-                Analytics
+                <span className="hidden sm:inline">Analytics</span>
               </TabsTrigger>
-              <TabsTrigger value="escalacao" className="font-heading gap-2">
+              <TabsTrigger value="escalacao" aria-label="Escalação" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
                 <Shield className="h-4 w-4" />
-                Escalação
+                <span className="hidden sm:inline">Escalação</span>
               </TabsTrigger>
             </TabsList>
 
