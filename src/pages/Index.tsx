@@ -112,7 +112,7 @@ export default function Index() {
   const activeCount = players.filter(p => p.escalavel && p.active).length;
 
   return (
-    <div className="min-h-screen gradient-pitch">
+    <div className={`min-h-screen transition-colors duration-500 ${activeTab === 'selecao' ? 'gradient-selection' : 'gradient-pitch'}`}>
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -124,7 +124,7 @@ export default function Index() {
         </div>
 
         {coachId ? (
-          <Tabs defaultValue="selecao" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="bg-card border border-border h-auto flex w-full justify-between sm:justify-center sm:w-auto">
               <TabsTrigger value="selecao" aria-label="Sorteio" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
                 <Swords className="h-4 w-4" />
@@ -218,17 +218,19 @@ export default function Index() {
 
         {/* Team result modal */}
         {teams && (
-          <TeamDisplay
-            open={showTeams}
-            onClose={() => setShowTeams(false)}
-            teamA={teams.teamA}
-            teamB={teams.teamB}
-            imbalance={teams.imbalance}
-            onOpenField={() => {
-              setShowTeams(false);
-              setShowField(true);
-            }}
-          />
+          <ErrorBoundary label="times sorteados" onReset={() => setShowTeams(false)}>
+            <TeamDisplay
+              open={showTeams}
+              onClose={() => setShowTeams(false)}
+              teamA={teams.teamA}
+              teamB={teams.teamB}
+              imbalance={teams.imbalance}
+              onOpenField={() => {
+                setShowTeams(false);
+                setShowField(true);
+              }}
+            />
+          </ErrorBoundary>
         )}
 
         {/* Advanced: Lineup field as opt-in modal */}
@@ -242,9 +244,11 @@ export default function Index() {
                 Opcional — só para refinar a formação. Se você só quer saber os times, o sorteio já está pronto.
               </p>
             </DialogHeader>
-            <Suspense fallback={<LazyFallback />}>
-              <LineupField players={players} vScores={vScores} />
-            </Suspense>
+            <ErrorBoundary label="campo" onReset={() => setShowField(false)}>
+              <Suspense fallback={<LazyFallback />}>
+                <LineupField players={players} vScores={vScores} />
+              </Suspense>
+            </ErrorBoundary>
           </DialogContent>
         </Dialog>
       </div>
