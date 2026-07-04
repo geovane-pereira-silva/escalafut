@@ -119,6 +119,12 @@
     background: linear-gradient(180deg, hsl(150 20% 8%) 0%, hsl(145 25% 12%) 100%);
   }
 
+  .gradient-selection {
+    background:
+      radial-gradient(ellipse at top, hsl(145 45% 18% / 0.9) 0%, transparent 60%),
+      linear-gradient(180deg, hsl(150 30% 10%) 0%, hsl(150 35% 6%) 100%);
+  }
+
   .team-blue-bg {
     background-color: hsl(var(--team-blue));
     color: hsl(var(--team-blue-foreground));

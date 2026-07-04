@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { toast } from 'sonner';
 import { calculateVScore } from '@/lib/scoring';
 import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } from 'lucide-react';
@@ -42,6 +43,7 @@ export default function Index() {
   const [showForm, setShowForm] = useState(false);
   const [showTeams, setShowTeams] = useState(false);
   const [showField, setShowField] = useState(false);
+  const [activeTab, setActiveTab] = useState('selecao');
   const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[]; imbalance: number } | null>(null);
 
   useEffect(() => {
