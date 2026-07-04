@@ -121,5 +121,5 @@ export function generateTeams(players: Player[]): { teamA: Player[]; teamB: Play
     }
   }
 
-  return { teamA, teamB };
+  return { teamA, teamB, imbalance: bestImbalance };
 }
