@@ -40,7 +40,8 @@ export default function Index() {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [showTeams, setShowTeams] = useState(false);
-  const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[] } | null>(null);
+  const [showField, setShowField] = useState(false);
+  const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[]; imbalance: number } | null>(null);
 
   useEffect(() => {
     fetchAllPerformances().then(p => setAllPerformances(p));
