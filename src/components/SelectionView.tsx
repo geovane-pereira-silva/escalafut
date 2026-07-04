@@ -44,12 +44,12 @@ function EditSkillsDialog({ player, open, onClose, onSave }: {
                 {SKILL_LABELS[sk]}
               </span>
               <Slider
-                min={0} max={20} step={1}
+                min={0} max={100} step={1}
                 value={[skills[sk] ?? 0]}
                 onValueChange={([v]) => setSkills(prev => ({ ...prev, [sk]: v }))}
                 className="flex-1"
               />
-              <span className="text-xs font-mono text-primary w-6 text-right">{skills[sk] ?? 0}</span>
+              <span className="text-xs font-mono text-primary w-8 text-right">{skills[sk] ?? 0}</span>
             </div>
           ))}
         </div>
