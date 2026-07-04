@@ -17,6 +17,7 @@ const LineupField = lazy(() => import('@/components/LineupField'));
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { calculateVScore } from '@/lib/scoring';
 import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } from 'lucide-react';
@@ -40,7 +41,8 @@ export default function Index() {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [showTeams, setShowTeams] = useState(false);
-  const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[] } | null>(null);
+  const [showField, setShowField] = useState(false);
+  const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[]; imbalance: number } | null>(null);
 
   useEffect(() => {
     fetchAllPerformances().then(p => setAllPerformances(p));
@@ -120,15 +122,15 @@ export default function Index() {
         </div>
 
         {coachId ? (
-          <Tabs defaultValue="cadastro" className="space-y-6">
+          <Tabs defaultValue="selecao" className="space-y-6">
             <TabsList className="bg-card border border-border h-auto flex w-full justify-between sm:justify-center sm:w-auto">
-              <TabsTrigger value="cadastro" aria-label="Cadastro" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
-                <UserPlus className="h-4 w-4" />
-                <span className="hidden sm:inline">Cadastro</span>
+              <TabsTrigger value="selecao" aria-label="Sorteio" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
+                <Swords className="h-4 w-4" />
+                <span className="hidden sm:inline">Sorteio</span>
               </TabsTrigger>
-              <TabsTrigger value="selecao" aria-label="Seleção" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
-                <Users className="h-4 w-4" />
-                <span className="hidden sm:inline">Seleção</span>
+              <TabsTrigger value="cadastro" aria-label="Elenco" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
+                <UserPlus className="h-4 w-4" />
+                <span className="hidden sm:inline">Elenco</span>
               </TabsTrigger>
               <TabsTrigger value="rodadas" aria-label="Rodadas" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
                 <ClipboardList className="h-4 w-4" />
@@ -138,23 +140,32 @@ export default function Index() {
                 <BarChart3 className="h-4 w-4" />
                 <span className="hidden sm:inline">Analytics</span>
               </TabsTrigger>
-              <TabsTrigger value="escalacao" aria-label="Escalação" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
-                <Shield className="h-4 w-4" />
-                <span className="hidden sm:inline">Escalação</span>
-              </TabsTrigger>
             </TabsList>
+
+            {/* Seleção / Sorteio Tab — main flow */}
+            <TabsContent value="selecao" className="space-y-6">
+              <SelectionView
+                players={players}
+                onUpdatePlayer={savePlayer}
+              />
+              <Button
+                onClick={handleEscalar}
+                disabled={activeCount < 14}
+                className="w-full gradient-gold text-primary-foreground font-heading text-lg py-6 gap-2 min-h-[56px]"
+              >
+                <Swords className="h-5 w-5" />
+                Sortear Times ({activeCount}/14 confirmados)
+              </Button>
+            </TabsContent>
 
             {/* Cadastro Tab */}
             <TabsContent value="cadastro" className="space-y-6">
-              {/* Add player button */}
               {!showForm && (
                 <Button onClick={handleNewPlayer} className="gradient-gold text-primary-foreground font-heading gap-2">
                   <UserPlus className="h-4 w-4" />
                   Adicionar Jogador
                 </Button>
               )}
-
-              {/* Collapsible form */}
               {showForm && (
                 <PlayerForm
                   onSave={handleSave}
@@ -162,8 +173,6 @@ export default function Index() {
                   onCancelEdit={handleCancelEdit}
                 />
               )}
-
-              {/* Radar fixed + list scrollable */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="lg:sticky lg:top-6 lg:self-start">
                   <PlayerRadar player={selectedPlayer} />
@@ -180,30 +189,12 @@ export default function Index() {
               </div>
             </TabsContent>
 
-            {/* Seleção Tab */}
-            <TabsContent value="selecao" className="space-y-6">
-              <SelectionView
-                players={players}
-                onUpdatePlayer={savePlayer}
-              />
-              <Button
-                onClick={handleEscalar}
-                disabled={activeCount < 14}
-                className="w-full gradient-gold text-primary-foreground font-heading text-lg py-6 gap-2"
-              >
-                <Swords className="h-5 w-5" />
-                Escalar Times ({activeCount}/14 escaláveis)
-              </Button>
-            </TabsContent>
-
-            {/* Rodadas Tab */}
             <TabsContent value="rodadas" className="space-y-6">
               <Suspense fallback={<LazyFallback />}>
                 <RoundManager players={players} coachId={coachId} />
               </Suspense>
             </TabsContent>
 
-            {/* Analytics Tab */}
             <TabsContent value="analytics" className="space-y-6">
               <Suspense fallback={<LazyFallback />}>
                 <AnalyticsDashboard
@@ -211,13 +202,6 @@ export default function Index() {
                   rounds={rounds}
                   allPerformances={allPerformances}
                 />
-              </Suspense>
-            </TabsContent>
-
-            {/* Escalação Tab */}
-            <TabsContent value="escalacao" className="space-y-6">
-              <Suspense fallback={<LazyFallback />}>
-                <LineupField players={players} vScores={vScores} />
               </Suspense>
             </TabsContent>
           </Tabs>
@@ -230,15 +214,37 @@ export default function Index() {
           </div>
         )}
 
-        {/* Team modal */}
+        {/* Team result modal */}
         {teams && (
           <TeamDisplay
             open={showTeams}
             onClose={() => setShowTeams(false)}
             teamA={teams.teamA}
             teamB={teams.teamB}
+            imbalance={teams.imbalance}
+            onOpenField={() => {
+              setShowTeams(false);
+              setShowField(true);
+            }}
           />
         )}
+
+        {/* Advanced: Lineup field as opt-in modal */}
+        <Dialog open={showField} onOpenChange={v => !v && setShowField(false)}>
+          <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto p-3 sm:p-6">
+            <DialogHeader>
+              <DialogTitle className="font-heading text-primary">
+                Ajustar posições no campo
+              </DialogTitle>
+              <p className="text-xs text-muted-foreground">
+                Opcional — só para refinar a formação. Se você só quer saber os times, o sorteio já está pronto.
+              </p>
+            </DialogHeader>
+            <Suspense fallback={<LazyFallback />}>
+              <LineupField players={players} vScores={vScores} />
+            </Suspense>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

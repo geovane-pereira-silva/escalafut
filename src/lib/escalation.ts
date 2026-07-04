@@ -48,7 +48,15 @@ function meetsMinimums(team: Player[]): boolean {
   return true;
 }
 
-export function generateTeams(players: Player[]): { teamA: Player[]; teamB: Player[] } {
+export function computeTeamSectorAvg(team: Player[], sector: string): number {
+  return teamSectorAvg(team, sector);
+}
+
+export function computeImbalance(a: Player[], b: Player[]): number {
+  return teamImbalance(a, b);
+}
+
+export function generateTeams(players: Player[]): { teamA: Player[]; teamB: Player[]; imbalance: number } {
   const active = players.filter(p => p.active);
   if (active.length < 14) throw new Error('Mínimo de 14 jogadores ativos necessário');
 
@@ -113,5 +121,5 @@ export function generateTeams(players: Player[]): { teamA: Player[]; teamB: Play
     }
   }
 
-  return { teamA, teamB };
+  return { teamA, teamB, imbalance: bestImbalance };
 }
