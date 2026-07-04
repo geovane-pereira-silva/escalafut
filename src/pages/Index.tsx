@@ -17,6 +17,7 @@ const LineupField = lazy(() => import('@/components/LineupField'));
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { calculateVScore } from '@/lib/scoring';
 import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } from 'lucide-react';
