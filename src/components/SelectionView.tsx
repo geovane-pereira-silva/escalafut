@@ -134,17 +134,32 @@ export default function SelectionView({ players, onUpdatePlayer }: SelectionView
     <div className="space-y-6">
       <h2 className="text-xl font-heading text-primary">Seleção de Jogadores</h2>
 
-      {/* Escaláveis por posição */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Escaláveis por posição — sanfonadas */}
+      <Accordion
+        type="multiple"
+        defaultValue={groupedEscalavel.map(g => g.pos)}
+        className="w-full space-y-2"
+      >
         {groupedEscalavel.map(g => (
-          <div key={g.pos} className="space-y-2">
-            <h3 className="text-sm font-heading text-primary tracking-wider border-b border-border pb-1">
-              {g.pos} — {g.label} ({g.players.length})
-            </h3>
-            {g.players.map(renderPlayerRow)}
-          </div>
+          <AccordionItem
+            key={g.pos}
+            value={g.pos}
+            className="border border-border rounded-md bg-card/40 px-3"
+          >
+            <AccordionTrigger className="text-sm font-heading text-primary tracking-wider min-h-[44px] hover:no-underline">
+              <span className="flex items-center gap-2">
+                {g.pos} — {g.label}
+                <span className="text-xs text-muted-foreground">({g.players.length})</span>
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-1.5 pt-1">
+                {g.players.map(renderPlayerRow)}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
+      </Accordion>
 
       {/* Inativos / Não escaláveis */}
       {naoEscalavel.length > 0 && (
