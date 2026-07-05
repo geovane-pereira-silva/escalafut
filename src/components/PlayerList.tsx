@@ -1,7 +1,7 @@
 import { Player, POSITIONS, POSITION_LABELS, getPlayerOverall } from '@/types/player';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Pencil, UserCheck, UserX } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 
 interface PlayerListProps {
   players: Player[];
