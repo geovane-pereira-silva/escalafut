@@ -68,13 +68,17 @@ export default function PlayerList({ players, onEdit, onSelect, selectedId }: Pl
           Jogadores ({players.length})
         </h2>
         <Badge variant="secondary" className="font-heading">
-          {activePlayers.filter(p => p.escalavel).length} Disponíveis
+          {activePlayers.filter(p => p.escalavel).length} confirmados
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p className="text-xs text-muted-foreground -mt-2">
+        Aqui você gerencia o elenco (nome, posição, atributos). A presença semanal é marcada na aba <span className="text-primary">Presença</span>.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {groupedActive.map(g => (
-          <div key={g.pos} className="space-y-2">
+          <div key={g.pos} className="space-y-1.5">
             <h3 className="text-sm font-heading text-primary tracking-wider border-b border-border pb-1">
               {g.pos} — {g.label}
             </h3>
