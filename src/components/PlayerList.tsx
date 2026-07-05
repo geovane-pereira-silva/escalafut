@@ -1,17 +1,16 @@
 import { Player, POSITIONS, POSITION_LABELS, getPlayerOverall } from '@/types/player';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Pencil, UserCheck, UserX } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 
 interface PlayerListProps {
   players: Player[];
   onEdit: (player: Player) => void;
-  onToggleEscalavel: (player: Player) => void;
   onSelect: (player: Player) => void;
   selectedId?: string;
 }
 
-export default function PlayerList({ players, onEdit, onToggleEscalavel, onSelect, selectedId }: PlayerListProps) {
+export default function PlayerList({ players, onEdit, onSelect, selectedId }: PlayerListProps) {
   const activePlayers = players.filter(p => p.active);
   const inactivePlayers = players.filter(p => !p.active);
 
@@ -45,7 +44,12 @@ export default function PlayerList({ players, onEdit, onToggleEscalavel, onSelec
           OVR {getPlayerOverall(p).toFixed(1)}
         </span>
       </div>
-      <div className="flex gap-1 shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
+        {p.active && !p.escalavel && (
+          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-destructive/40 text-destructive">
+            Fora hoje
+          </Badge>
+        )}
         <Button
           size="icon" variant="ghost"
           className="h-7 w-7 text-warning hover:text-warning"
@@ -53,19 +57,6 @@ export default function PlayerList({ players, onEdit, onToggleEscalavel, onSelec
         >
           <Pencil className="h-3.5 w-3.5" />
         </Button>
-        {p.active && (
-          <button
-            onClick={e => { e.stopPropagation(); onToggleEscalavel(p); }}
-            className={`flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors ${
-              p.escalavel
-                ? 'bg-accent/20 text-accent hover:bg-accent/30'
-                : 'bg-destructive/20 text-destructive hover:bg-destructive/30'
-            }`}
-          >
-            {p.escalavel ? <UserCheck className="h-3.5 w-3.5" /> : <UserX className="h-3.5 w-3.5" />}
-            {p.escalavel ? 'Disponível' : 'Indisponível'}
-          </button>
-        )}
       </div>
     </div>
   );
@@ -77,13 +68,17 @@ export default function PlayerList({ players, onEdit, onToggleEscalavel, onSelec
           Jogadores ({players.length})
         </h2>
         <Badge variant="secondary" className="font-heading">
-          {activePlayers.filter(p => p.escalavel).length} Disponíveis
+          {activePlayers.filter(p => p.escalavel).length} confirmados
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p className="text-xs text-muted-foreground -mt-2">
+        Aqui você gerencia o elenco (nome, posição, atributos). A presença semanal é marcada na aba <span className="text-primary">Presença</span>.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {groupedActive.map(g => (
-          <div key={g.pos} className="space-y-2">
+          <div key={g.pos} className="space-y-1.5">
             <h3 className="text-sm font-heading text-primary tracking-wider border-b border-border pb-1">
               {g.pos} — {g.label}
             </h3>

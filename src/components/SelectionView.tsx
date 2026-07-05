@@ -132,7 +132,10 @@ export default function SelectionView({ players, onUpdatePlayer }: SelectionView
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-heading text-primary">Seleção de Jogadores</h2>
+      <div className="space-y-1">
+        <h2 className="text-2xl font-heading text-primary">Quem vai jogar hoje?</h2>
+        <p className="text-xs text-muted-foreground">Toque em cada jogador para marcar presença. Mínimo 14 confirmados para sortear.</p>
+      </div>
 
       {/* Escaláveis por posição — sanfonadas */}
       <Accordion

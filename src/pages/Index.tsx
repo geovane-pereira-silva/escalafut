@@ -125,39 +125,31 @@ export default function Index() {
 
         {coachId ? (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="bg-card border border-border h-auto flex w-full justify-between sm:justify-center sm:w-auto">
-              <TabsTrigger value="selecao" aria-label="Sorteio" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
+            <TabsList className="bg-card border border-border h-auto grid grid-cols-4 w-full sm:w-auto sm:inline-flex gap-1 p-1">
+              <TabsTrigger value="selecao" aria-label="Presença" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
                 <Swords className="h-4 w-4" />
-                <span className="hidden sm:inline">Sorteio</span>
+                <span>Presença</span>
               </TabsTrigger>
-              <TabsTrigger value="cadastro" aria-label="Elenco" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
+              <TabsTrigger value="cadastro" aria-label="Elenco" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
                 <UserPlus className="h-4 w-4" />
-                <span className="hidden sm:inline">Elenco</span>
+                <span>Elenco</span>
               </TabsTrigger>
-              <TabsTrigger value="rodadas" aria-label="Rodadas" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
+              <TabsTrigger value="rodadas" aria-label="Rodadas" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
                 <ClipboardList className="h-4 w-4" />
-                <span className="hidden sm:inline">Rodadas</span>
+                <span>Rodadas</span>
               </TabsTrigger>
-              <TabsTrigger value="analytics" aria-label="Analytics" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
+              <TabsTrigger value="analytics" aria-label="Estatísticas" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
                 <BarChart3 className="h-4 w-4" />
-                <span className="hidden sm:inline">Analytics</span>
+                <span>Stats</span>
               </TabsTrigger>
             </TabsList>
 
-            {/* Seleção / Sorteio Tab — main flow */}
-            <TabsContent value="selecao" className="space-y-6">
+            {/* Presença Tab — main flow */}
+            <TabsContent value="selecao" className="space-y-6 pb-28">
               <SelectionView
                 players={players}
                 onUpdatePlayer={savePlayer}
               />
-              <Button
-                onClick={handleEscalar}
-                disabled={activeCount < 14}
-                className="w-full gradient-gold text-primary-foreground font-heading text-lg py-6 gap-2 min-h-[56px]"
-              >
-                <Swords className="h-5 w-5" />
-                Sortear Times ({activeCount}/14 confirmados)
-              </Button>
             </TabsContent>
 
             {/* Cadastro Tab */}
@@ -183,7 +175,7 @@ export default function Index() {
                   <PlayerList
                     players={players}
                     onEdit={handleEdit}
-                    onToggleEscalavel={handleToggleEscalavel}
+                    
                     onSelect={setSelectedPlayer}
                     selectedId={selectedPlayer?.id}
                   />
@@ -213,6 +205,24 @@ export default function Index() {
             <p className="text-muted-foreground font-heading text-lg">
               Insira seu Nome/ID de Técnico para começar
             </p>
+          </div>
+        )}
+
+        {/* Sticky floating action — only on Presença tab */}
+        {coachId && activeTab === 'selecao' && (
+          <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.3)]">
+            <div className="max-w-7xl mx-auto">
+              <Button
+                onClick={handleEscalar}
+                disabled={activeCount < 14}
+                className="w-full gradient-gold text-primary-foreground font-heading text-base sm:text-lg py-5 gap-2 min-h-[52px]"
+              >
+                <Swords className="h-5 w-5" />
+                {activeCount < 14
+                  ? `${activeCount}/14 confirmados`
+                  : `${activeCount} confirmados — Sortear Times`}
+              </Button>
+            </div>
           </div>
         )}
 
