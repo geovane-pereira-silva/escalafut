@@ -44,7 +44,12 @@ export default function PlayerList({ players, onEdit, onSelect, selectedId }: Pl
           OVR {getPlayerOverall(p).toFixed(1)}
         </span>
       </div>
-      <div className="flex gap-1 shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
+        {p.active && !p.escalavel && (
+          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-destructive/40 text-destructive">
+            Fora hoje
+          </Badge>
+        )}
         <Button
           size="icon" variant="ghost"
           className="h-7 w-7 text-warning hover:text-warning"
@@ -52,19 +57,6 @@ export default function PlayerList({ players, onEdit, onSelect, selectedId }: Pl
         >
           <Pencil className="h-3.5 w-3.5" />
         </Button>
-        {p.active && (
-          <button
-            onClick={e => { e.stopPropagation(); onToggleEscalavel(p); }}
-            className={`flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors ${
-              p.escalavel
-                ? 'bg-accent/20 text-accent hover:bg-accent/30'
-                : 'bg-destructive/20 text-destructive hover:bg-destructive/30'
-            }`}
-          >
-            {p.escalavel ? <UserCheck className="h-3.5 w-3.5" /> : <UserX className="h-3.5 w-3.5" />}
-            {p.escalavel ? 'Disponível' : 'Indisponível'}
-          </button>
-        )}
       </div>
     </div>
   );
