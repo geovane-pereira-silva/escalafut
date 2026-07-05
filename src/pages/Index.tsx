@@ -125,22 +125,22 @@ export default function Index() {
 
         {coachId ? (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="bg-card border border-border h-auto flex w-full justify-between sm:justify-center sm:w-auto">
-              <TabsTrigger value="selecao" aria-label="Sorteio" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
+            <TabsList className="bg-card border border-border h-auto grid grid-cols-4 w-full sm:w-auto sm:inline-flex gap-1 p-1">
+              <TabsTrigger value="selecao" aria-label="Presença" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
                 <Swords className="h-4 w-4" />
-                <span className="hidden sm:inline">Sorteio</span>
+                <span>Presença</span>
               </TabsTrigger>
-              <TabsTrigger value="cadastro" aria-label="Elenco" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
+              <TabsTrigger value="cadastro" aria-label="Elenco" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
                 <UserPlus className="h-4 w-4" />
-                <span className="hidden sm:inline">Elenco</span>
+                <span>Elenco</span>
               </TabsTrigger>
-              <TabsTrigger value="rodadas" aria-label="Rodadas" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
+              <TabsTrigger value="rodadas" aria-label="Rodadas" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
                 <ClipboardList className="h-4 w-4" />
-                <span className="hidden sm:inline">Rodadas</span>
+                <span>Rodadas</span>
               </TabsTrigger>
-              <TabsTrigger value="analytics" aria-label="Analytics" className="font-heading gap-2 min-h-[44px] min-w-[44px]">
+              <TabsTrigger value="analytics" aria-label="Estatísticas" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
                 <BarChart3 className="h-4 w-4" />
-                <span className="hidden sm:inline">Analytics</span>
+                <span>Stats</span>
               </TabsTrigger>
             </TabsList>
 
