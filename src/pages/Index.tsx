@@ -144,20 +144,12 @@ export default function Index() {
               </TabsTrigger>
             </TabsList>
 
-            {/* Seleção / Sorteio Tab — main flow */}
-            <TabsContent value="selecao" className="space-y-6">
+            {/* Presença Tab — main flow */}
+            <TabsContent value="selecao" className="space-y-6 pb-28">
               <SelectionView
                 players={players}
                 onUpdatePlayer={savePlayer}
               />
-              <Button
-                onClick={handleEscalar}
-                disabled={activeCount < 14}
-                className="w-full gradient-gold text-primary-foreground font-heading text-lg py-6 gap-2 min-h-[56px]"
-              >
-                <Swords className="h-5 w-5" />
-                Sortear Times ({activeCount}/14 confirmados)
-              </Button>
             </TabsContent>
 
             {/* Cadastro Tab */}
