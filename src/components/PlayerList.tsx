@@ -10,7 +10,7 @@ interface PlayerListProps {
   selectedId?: string;
 }
 
-export default function PlayerList({ players, onEdit, onToggleEscalavel, onSelect, selectedId }: PlayerListProps) {
+export default function PlayerList({ players, onEdit, onSelect, selectedId }: PlayerListProps) {
   const activePlayers = players.filter(p => p.active);
   const inactivePlayers = players.filter(p => !p.active);
 
