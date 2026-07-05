@@ -175,7 +175,7 @@ export default function Index() {
                   <PlayerList
                     players={players}
                     onEdit={handleEdit}
-                    onToggleEscalavel={handleToggleEscalavel}
+                    
                     onSelect={setSelectedPlayer}
                     selectedId={selectedPlayer?.id}
                   />
