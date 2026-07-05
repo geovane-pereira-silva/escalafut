@@ -6,7 +6,6 @@ import { Pencil } from 'lucide-react';
 interface PlayerListProps {
   players: Player[];
   onEdit: (player: Player) => void;
-  onToggleEscalavel: (player: Player) => void;
   onSelect: (player: Player) => void;
   selectedId?: string;
 }
