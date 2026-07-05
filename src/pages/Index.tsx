@@ -208,6 +208,24 @@ export default function Index() {
           </div>
         )}
 
+        {/* Sticky floating action — only on Presença tab */}
+        {coachId && activeTab === 'selecao' && (
+          <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.3)]">
+            <div className="max-w-7xl mx-auto">
+              <Button
+                onClick={handleEscalar}
+                disabled={activeCount < 14}
+                className="w-full gradient-gold text-primary-foreground font-heading text-base sm:text-lg py-5 gap-2 min-h-[52px]"
+              >
+                <Swords className="h-5 w-5" />
+                {activeCount < 14
+                  ? `${activeCount}/14 confirmados`
+                  : `${activeCount} confirmados — Sortear Times`}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Team result modal */}
         {teams && (
           <ErrorBoundary label="times sorteados" onReset={() => setShowTeams(false)}>
