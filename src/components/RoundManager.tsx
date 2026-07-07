@@ -237,9 +237,17 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
         )}
 
         {selectedRound && selectedRound.status === 'open' && (
-          <Button onClick={handleFinalize} variant="destructive" className="font-heading gap-1">
-            <Lock className="h-4 w-4" /> Finalizar Rodada
-          </Button>
+          <>
+            <Button
+              onClick={() => setShowAiChat(true)}
+              className="gradient-gold text-primary-foreground font-heading gap-1"
+            >
+              <Sparkles className="h-4 w-4" /> Preencher com IA
+            </Button>
+            <Button onClick={handleFinalize} variant="destructive" className="font-heading gap-1">
+              <Lock className="h-4 w-4" /> Finalizar Rodada
+            </Button>
+          </>
         )}
       </div>
 
