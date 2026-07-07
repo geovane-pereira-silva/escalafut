@@ -25,7 +25,7 @@ function capitalize(name: string) {
   return name.replace(/\b\w/g, c => c.toUpperCase());
 }
 
-export default function PlayerForm({ onSave, editingPlayer, onCancelEdit }: PlayerFormProps) {
+export default function PlayerForm({ onSave, editingPlayer, onCancelEdit, existingPlayers = [] }: PlayerFormProps) {
   const [name, setName] = useState('');
   const [active, setActive] = useState(true);
   const [posPrimary, setPosPrimary] = useState<Position>('ZG');
