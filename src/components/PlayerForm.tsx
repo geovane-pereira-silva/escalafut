@@ -14,6 +14,11 @@ interface PlayerFormProps {
   onSave: (player: Player) => void;
   editingPlayer: Player | null;
   onCancelEdit: () => void;
+  existingPlayers?: Player[];
+}
+
+function normalizeName(n: string) {
+  return n.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
 }
 
 function capitalize(name: string) {
