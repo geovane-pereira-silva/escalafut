@@ -143,10 +143,3 @@ export function useRounds(coachId: string | null) {
     createRound, savePerformance, finalizeRound, saveRoundSummary,
   };
 }
-
-  return {
-    rounds, performances, loading,
-    fetchRounds, fetchPerformances, fetchAllPerformances,
-    createRound, savePerformance, finalizeRound,
-  };
-}
