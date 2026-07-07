@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Sparkles, Loader2, Check, X, RefreshCw, MessageSquareText } from 'lucide-react';
+import { Sparkles, Loader2, Check, X, RefreshCw, Bot, User2 } from 'lucide-react';
 
 interface Props {
   open: boolean;
@@ -126,18 +126,50 @@ export default function MatchSummaryChat({ open, onClose, players, roundId, init
 
         {step === 'input' && (
           <div className="space-y-3 mt-2">
-            <div className="text-xs text-muted-foreground flex items-center gap-1">
-              <MessageSquareText className="h-3 w-3" />
-              Ex: "Time verde ganhou 4x2. João fez 2 gols e deu 1 assistência. Pedro fez 1 gol. Carlos (goleiro) fez 3 defesas difíceis. Ricardo levou amarelo."
+            {/* Assistant bubble */}
+            <div className="flex items-start gap-2">
+              <div className="h-7 w-7 rounded-full gradient-gold flex items-center justify-center shrink-0">
+                <Bot className="h-3.5 w-3.5 text-primary-foreground" />
+              </div>
+              <div className="rounded-2xl rounded-tl-sm bg-muted/60 border border-border/50 px-3 py-2 text-xs text-foreground/90 max-w-[85%]">
+                Me conta como foi a pelada. Ex: <span className="italic text-muted-foreground">"Time verde ganhou 4x2. João fez 2 gols e deu 1 assistência. Carlos (goleiro) fez 3 defesas difíceis. Ricardo levou amarelo."</span>
+              </div>
             </div>
-            <Textarea
-              value={summary}
-              onChange={e => setSummary(e.target.value)}
-              placeholder="Escreva o que aconteceu na partida com suas próprias palavras..."
-              rows={8}
-              className="resize-none"
-            />
-            <div className="flex justify-end gap-2">
+
+            {/* User bubble (input) */}
+            <div className="flex items-start gap-2 justify-end">
+              <div className="flex-1 max-w-[85%]">
+                <Textarea
+                  value={summary}
+                  onChange={e => setSummary(e.target.value)}
+                  placeholder="Escreva o resumo da partida..."
+                  rows={7}
+                  className="resize-none rounded-2xl rounded-tr-sm bg-primary/10 border-primary/30 focus-visible:ring-primary/40"
+                />
+              </div>
+              <div className="h-7 w-7 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0">
+                <User2 className="h-3.5 w-3.5 text-primary" />
+              </div>
+            </div>
+
+            {/* Processing bubble */}
+            {loading && (
+              <div className="flex items-start gap-2">
+                <div className="h-7 w-7 rounded-full gradient-gold flex items-center justify-center shrink-0">
+                  <Bot className="h-3.5 w-3.5 text-primary-foreground animate-pulse" />
+                </div>
+                <div className="rounded-2xl rounded-tl-sm bg-muted/60 border border-border/50 px-3 py-2 text-xs flex items-center gap-1.5">
+                  <span className="text-muted-foreground">Analisando a partida</span>
+                  <span className="flex gap-0.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '120ms' }} />
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '240ms' }} />
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 pt-1">
               <Button variant="outline" onClick={handleClose}>Cancelar</Button>
               <Button
                 onClick={handleParse}
@@ -168,35 +200,45 @@ export default function MatchSummaryChat({ open, onClose, players, roundId, init
                 if (!p) return null;
                 const points = calculatePoints(r.scouts, p.positionPrimary);
                 return (
-                  <div key={r.playerId} className="p-3 rounded-md bg-muted/40 border border-border">
-                    <div className="flex items-center justify-between mb-2">
+                  <div key={r.playerId} className="rounded-[var(--radius)] bg-card/70 border border-border/60 shadow-[0_2px_10px_-6px_hsl(0_0%_0%/0.5)] overflow-hidden">
+                    <div className="flex items-center justify-between gap-2 px-3 py-2 bg-muted/40 border-b border-border/50">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="font-medium truncate">{p.name}</span>
+                        <div className="h-7 w-7 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-[10px] font-heading text-primary shrink-0">
+                          {p.name.split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase()}
+                        </div>
+                        <span className="font-medium truncate text-sm">{p.name}</span>
                         <Badge variant="secondary" className="text-[10px]">{p.positionPrimary}</Badge>
-                        <span className={`text-xs font-mono ${points >= 0 ? 'text-accent' : 'text-destructive'}`}>
-                          {points > 0 ? '+' : ''}{points.toFixed(1)}pts
-                        </span>
                       </div>
-                      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeRow(r.playerId)}>
-                        <X className="h-3 w-3" />
-                      </Button>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`text-sm font-heading ${points >= 0 ? 'text-accent' : 'text-destructive'}`}>
+                          {points > 0 ? '+' : ''}{points.toFixed(1)}<span className="text-[10px] text-muted-foreground ml-0.5">pts</span>
+                        </span>
+                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeRow(r.playerId)} aria-label="Remover">
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     {r.note && (
-                      <div className="text-[11px] italic text-muted-foreground mb-2">"{r.note}"</div>
+                      <div className="px-3 pt-2 text-[11px] italic text-muted-foreground border-l-2 border-primary/40 ml-3 mt-2">
+                        "{r.note}"
+                      </div>
                     )}
-                    <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                      {visibleActions(p).map(action => (
-                        <div key={action} className="flex items-center justify-between text-xs gap-2">
-                          <span className="text-muted-foreground truncate">{SCOUT_LABELS[action]}</span>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <Button size="icon" variant="outline" className="h-5 w-5"
-                              onClick={() => updateScout(r.playerId, action, -1)}>-</Button>
-                            <span className="font-mono w-5 text-center">{r.scouts[action] ?? 0}</span>
-                            <Button size="icon" variant="outline" className="h-5 w-5"
-                              onClick={() => updateScout(r.playerId, action, +1)}>+</Button>
+                    <div className="px-3 py-2.5 grid grid-cols-2 gap-x-3 gap-y-1">
+                      {visibleActions(p).map(action => {
+                        const val = r.scouts[action] ?? 0;
+                        return (
+                          <div key={action} className={`flex items-center justify-between text-xs gap-2 ${val > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                            <span className="truncate">{SCOUT_LABELS[action]}</span>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <Button size="icon" variant="outline" className="h-5 w-5"
+                                onClick={() => updateScout(r.playerId, action, -1)}>-</Button>
+                              <span className={`font-mono w-5 text-center ${val > 0 ? 'text-primary font-semibold' : ''}`}>{val}</span>
+                              <Button size="icon" variant="outline" className="h-5 w-5"
+                                onClick={() => updateScout(r.playerId, action, +1)}>+</Button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 );

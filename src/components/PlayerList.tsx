@@ -1,7 +1,6 @@
-import { Player, POSITIONS, POSITION_LABELS, getPlayerOverall } from '@/types/player';
-import { Button } from '@/components/ui/button';
+import { Player, POSITIONS, POSITION_LABELS } from '@/types/player';
 import { Badge } from '@/components/ui/badge';
-import { Pencil } from 'lucide-react';
+import PlayerCard from './PlayerCard';
 
 interface PlayerListProps {
   players: Player[];
@@ -23,77 +22,63 @@ export default function PlayerList({ players, onEdit, onSelect, selectedId }: Pl
 
   const groupedActive = groupByPosition(activePlayers);
 
-  const renderPlayer = (p: Player) => (
-    <div
-      key={p.id}
-      onClick={() => onSelect(p)}
-      className={`flex items-center justify-between p-2.5 rounded-md cursor-pointer transition-colors border ${
-        selectedId === p.id
-          ? 'border-primary bg-primary/10'
-          : 'border-transparent bg-muted/40 hover:bg-muted/70'
-      } ${!p.active ? 'opacity-50' : ''}`}
-    >
-      <div className="flex items-center gap-2 min-w-0">
-        <span className="text-sm font-medium truncate">{p.name}</span>
-        {p.positionSecondary && (
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-            {p.positionSecondary}
-          </Badge>
-        )}
-        <span className="text-xs text-muted-foreground">
-          OVR {getPlayerOverall(p).toFixed(1)}
-        </span>
-      </div>
-      <div className="flex items-center gap-2 shrink-0">
-        {p.active && !p.escalavel && (
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-destructive/40 text-destructive">
-            Fora hoje
-          </Badge>
-        )}
-        <Button
-          size="icon" variant="ghost"
-          className="h-7 w-7 text-warning hover:text-warning"
-          onClick={e => { e.stopPropagation(); onEdit(p); }}
-        >
-          <Pencil className="h-3.5 w-3.5" />
-        </Button>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-heading text-primary">
-          Jogadores ({players.length})
-        </h2>
+        <div>
+          <h2 className="text-xl font-heading text-primary">
+            Jogadores <span className="text-muted-foreground text-sm">({players.length})</span>
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            Cadastro do elenco. Presença semanal fica na aba <span className="text-primary">Presença</span>.
+          </p>
+        </div>
         <Badge variant="secondary" className="font-heading">
           {activePlayers.filter(p => p.escalavel).length} confirmados
         </Badge>
       </div>
 
-      <p className="text-xs text-muted-foreground -mt-2">
-        Aqui você gerencia o elenco (nome, posição, atributos). A presença semanal é marcada na aba <span className="text-primary">Presença</span>.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-5">
         {groupedActive.map(g => (
-          <div key={g.pos} className="space-y-1.5">
-            <h3 className="text-sm font-heading text-primary tracking-wider border-b border-border pb-1">
-              {g.pos} — {g.label}
-            </h3>
-            {g.players.map(renderPlayer)}
+          <div key={g.pos} className="space-y-2">
+            <div className="flex items-baseline gap-2 border-b border-border/60 pb-1.5">
+              <h3 className="text-sm font-heading text-primary tracking-wider">
+                {g.pos}
+              </h3>
+              <span className="text-[11px] text-muted-foreground">{g.label}</span>
+              <span className="text-[11px] text-muted-foreground/60 ml-auto">{g.players.length}</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              {g.players.map(p => (
+                <PlayerCard
+                  key={p.id}
+                  player={p}
+                  selected={selectedId === p.id}
+                  onSelect={onSelect}
+                  onEdit={onEdit}
+                />
+              ))}
+            </div>
           </div>
         ))}
       </div>
 
       {inactivePlayers.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-sm font-heading text-destructive tracking-wider border-b border-destructive/30 pb-1">
-            Inativos ({inactivePlayers.length})
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {inactivePlayers.sort((a, b) => a.name.localeCompare(b.name)).map(renderPlayer)}
+        <div className="space-y-2 pt-2">
+          <div className="flex items-baseline gap-2 border-b border-destructive/30 pb-1.5">
+            <h3 className="text-sm font-heading text-destructive tracking-wider">Inativos</h3>
+            <span className="text-[11px] text-muted-foreground">{inactivePlayers.length}</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+            {inactivePlayers.sort((a, b) => a.name.localeCompare(b.name)).map(p => (
+              <PlayerCard
+                key={p.id}
+                player={p}
+                selected={selectedId === p.id}
+                onSelect={onSelect}
+                onEdit={onEdit}
+              />
+            ))}
           </div>
         </div>
       )}

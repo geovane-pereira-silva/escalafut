@@ -3,7 +3,7 @@ import { computeTeamSectorAvg } from '@/lib/escalation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Share2, MapPin, X, Copy } from 'lucide-react';
+import { Share2, MapPin, X, Copy, Cpu, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 const POSITION_ORDER: Position[] = ['GL', 'ZG', 'LE', 'LD', 'VO', 'ME', 'PO', 'CA'];
@@ -66,29 +66,51 @@ function BalanceBar({ teamA, teamB, imbalance }: { teamA: Player[]; teamB: Playe
   const avgB = avgOverall(teamB);
   const total = avgA + avgB || 1;
   const pctA = (avgA / total) * 100;
-  // sum of 4 sector abs diffs; ~<1.0 is very balanced, ~<2.0 balanced, more = uneven
+
+  // Convert imbalance (sum of 4 sector abs diffs, ~0 = perfect) into 0-100 score.
+  // 0 diff -> 100%, 5+ -> ~0%. Smooth curve.
+  const score = Math.max(0, Math.min(100, 100 - imbalance * 20));
   const label =
-    imbalance < 1.0 ? 'Times muito equilibrados' :
-    imbalance < 2.0 ? 'Times equilibrados' :
-    imbalance < 3.5 ? 'Leve diferença de nível' :
+    score >= 90 ? 'Times muito equilibrados' :
+    score >= 75 ? 'Times equilibrados' :
+    score >= 55 ? 'Leve diferença de nível' :
     'Times desequilibrados';
-  const labelColor =
-    imbalance < 2.0 ? 'text-accent' :
-    imbalance < 3.5 ? 'text-warning' : 'text-destructive';
+  const scoreColor =
+    score >= 75 ? 'text-accent' :
+    score >= 55 ? 'text-warning' : 'text-destructive';
+  const barGlow =
+    score >= 75 ? 'shadow-[0_0_18px_hsl(145_60%_45%/0.35)]' :
+    score >= 55 ? 'shadow-[0_0_18px_hsl(35_90%_55%/0.3)]' :
+    'shadow-[0_0_18px_hsl(0_70%_50%/0.3)]';
 
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">Equilíbrio técnico</span>
-        <span className={`font-heading ${labelColor}`}>{label}</span>
+    <div className="rounded-[var(--radius)] border border-border/60 bg-card/60 p-3 space-y-3">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="h-8 w-8 rounded-md gradient-gold flex items-center justify-center shrink-0">
+            <Cpu className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] font-heading tracking-[0.15em] text-muted-foreground uppercase">Motor de Balanceamento</p>
+            <p className={`text-sm font-heading ${scoreColor} flex items-center gap-1`}>
+              <ShieldCheck className="h-3.5 w-3.5" /> {label}
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className={`text-2xl font-heading leading-none ${scoreColor}`}>{score.toFixed(0)}<span className="text-sm text-muted-foreground">%</span></div>
+          <div className="text-[10px] tracking-wider text-muted-foreground uppercase">Score de equilíbrio</div>
+        </div>
       </div>
-      <div className="flex h-2 rounded-full overflow-hidden bg-muted">
-        <div className="team-blue-bg" style={{ width: `${pctA}%` }} />
-        <div className="team-red-bg" style={{ width: `${100 - pctA}%` }} />
+
+      <div className={`flex h-2.5 rounded-full overflow-hidden bg-muted ${barGlow}`}>
+        <div className="team-blue-bg transition-[width]" style={{ width: `${pctA}%` }} />
+        <div className="team-red-bg transition-[width]" style={{ width: `${100 - pctA}%` }} />
       </div>
       <div className="flex justify-between text-[10px] font-mono text-muted-foreground">
-        <span>Azul {avgA.toFixed(1)}</span>
-        <span>Vermelho {avgB.toFixed(1)}</span>
+        <span>Azul OVR {avgA.toFixed(1)}</span>
+        <span className="italic">Δ setorial {imbalance.toFixed(2)}</span>
+        <span>Vermelho OVR {avgB.toFixed(1)}</span>
       </div>
     </div>
   );

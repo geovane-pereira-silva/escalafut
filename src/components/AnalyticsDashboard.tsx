@@ -170,12 +170,88 @@ export default function AnalyticsDashboard({ players, rounds, allPerformances }:
     sector: { label: 'Setor', color: 'hsl(var(--accent))' },
   };
 
+  // Editorial highlights ---------------------------------------
+  const lastRound = finalizedRounds[finalizedRounds.length - 1];
+  const craqueRodada = (() => {
+    if (!lastRound) return null;
+    const perfs = allPerformances.filter(p => p.roundId === lastRound.id);
+    if (!perfs.length) return null;
+    const top = [...perfs].sort((a, b) => b.pointsCalculated - a.pointsCalculated)[0];
+    const player = players.find(p => p.id === top.playerId);
+    return player ? { player, value: top.pointsCalculated, round: lastRound.roundNumber } : null;
+  })();
+
+  const artilheiro = (() => {
+    const goals: Record<string, number> = {};
+    for (const perf of allPerformances) {
+      const g = Number(perf.scouts?.gol ?? 0);
+      if (g > 0) goals[perf.playerId] = (goals[perf.playerId] ?? 0) + g;
+    }
+    const entries = Object.entries(goals).sort((a, b) => b[1] - a[1]);
+    if (!entries.length) return null;
+    const player = players.find(p => p.id === entries[0][0]);
+    return player ? { player, value: entries[0][1] } : null;
+  })();
+
+  const sequenciaPresenca = (() => {
+    const rids = finalizedRounds.map(r => r.id);
+    let best: { player: Player; streak: number } | null = null;
+    for (const p of players) {
+      let streak = 0;
+      for (let i = rids.length - 1; i >= 0; i--) {
+        const has = allPerformances.some(x => x.playerId === p.id && x.roundId === rids[i]);
+        if (has) streak++; else break;
+      }
+      if (streak > 0 && (!best || streak > best.streak)) best = { player: p, streak };
+    }
+    return best;
+  })();
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-heading text-primary flex items-center gap-2">
         <BarChart3 className="h-5 w-5" />
         Analytics & Métricas
       </h2>
+
+      {/* Editorial Highlights */}
+      {(craqueRodada || artilheiro || sequenciaPresenca) && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {craqueRodada && (
+            <HighlightCard
+              icon={Crown}
+              eyebrow={`Rodada ${craqueRodada.round}`}
+              title="Craque da Rodada"
+              name={craqueRodada.player.name}
+              value={craqueRodada.value.toFixed(1)}
+              unit="pts"
+              accent="gold"
+            />
+          )}
+          {artilheiro && (
+            <HighlightCard
+              icon={Target}
+              eyebrow="Temporada"
+              title="Artilheiro"
+              name={artilheiro.player.name}
+              value={artilheiro.value.toString()}
+              unit={artilheiro.value === 1 ? 'gol' : 'gols'}
+              accent="red"
+            />
+          )}
+          {sequenciaPresenca && (
+            <HighlightCard
+              icon={Flame}
+              eyebrow="Em campo"
+              title="Sequência de Presença"
+              name={sequenciaPresenca.player.name}
+              value={sequenciaPresenca.streak.toString()}
+              unit={sequenciaPresenca.streak === 1 ? 'rodada' : 'rodadas seguidas'}
+              accent="green"
+            />
+          )}
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -520,5 +596,57 @@ function DreamTeam({ players, vScores, playerStats, finalizedRounds, allPerforma
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+/* ==============================
+   Editorial Highlight Card
+   ============================== */
+interface HighlightCardProps {
+  icon: typeof Trophy;
+  eyebrow: string;
+  title: string;
+  name: string;
+  value: string;
+  unit: string;
+  accent: 'gold' | 'red' | 'green';
+}
+
+function HighlightCard({ icon: Icon, eyebrow, title, name, value, unit, accent }: HighlightCardProps) {
+  const styles = {
+    gold: {
+      wrap: 'border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card',
+      iconBg: 'gradient-gold text-primary-foreground',
+      value: 'text-primary',
+    },
+    red: {
+      wrap: 'border-destructive/30 bg-gradient-to-br from-destructive/10 via-card to-card',
+      iconBg: 'bg-destructive/80 text-destructive-foreground',
+      value: 'text-destructive',
+    },
+    green: {
+      wrap: 'border-accent/30 bg-gradient-to-br from-accent/10 via-card to-card',
+      iconBg: 'bg-accent/80 text-accent-foreground',
+      value: 'text-accent',
+    },
+  }[accent];
+
+  return (
+    <div className={`relative overflow-hidden rounded-[var(--radius)] border p-4 shadow-[0_4px_20px_-10px_hsl(0_0%_0%/0.5)] ${styles.wrap}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[9px] font-heading tracking-[0.18em] uppercase text-muted-foreground">{eyebrow}</p>
+          <p className="text-[11px] font-heading tracking-wider uppercase text-foreground/80 mt-0.5">{title}</p>
+          <p className="text-sm font-medium mt-2 truncate">{name}</p>
+        </div>
+        <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${styles.iconBg}`}>
+          <Icon className="h-4 w-4" />
+        </div>
+      </div>
+      <div className="flex items-baseline gap-1.5 mt-2">
+        <span className={`text-3xl font-heading leading-none ${styles.value}`}>{value}</span>
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{unit}</span>
+      </div>
+    </div>
   );
 }
