@@ -3,7 +3,7 @@ import { computeTeamSectorAvg } from '@/lib/escalation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Share2, MapPin, X, Copy } from 'lucide-react';
+import { Share2, MapPin, X, Copy, Cpu, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 const POSITION_ORDER: Position[] = ['GL', 'ZG', 'LE', 'LD', 'VO', 'ME', 'PO', 'CA'];
