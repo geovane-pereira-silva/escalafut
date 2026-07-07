@@ -8,6 +8,7 @@ export interface Round {
   roundNumber: number;
   roundDate: string;
   status: 'open' | 'finalized';
+  summaryText?: string;
 }
 
 export interface PlayerPerformance {
@@ -25,6 +26,7 @@ function dbToRound(row: any): Round {
     roundNumber: row.round_number,
     roundDate: row.round_date,
     status: row.status,
+    summaryText: row.summary_text ?? undefined,
   };
 }
 
