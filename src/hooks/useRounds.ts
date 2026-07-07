@@ -128,6 +128,22 @@ export function useRounds(coachId: string | null) {
     toast.success('Rodada finalizada!');
   }, [fetchRounds]);
 
+  const saveRoundSummary = useCallback(async (roundId: string, summaryText: string) => {
+    const { error } = await supabase
+      .from('rounds')
+      .update({ summary_text: summaryText } as any)
+      .eq('id', roundId);
+    if (error) { toast.error('Erro ao salvar resumo'); return; }
+    await fetchRounds();
+  }, [fetchRounds]);
+
+  return {
+    rounds, performances, loading,
+    fetchRounds, fetchPerformances, fetchAllPerformances,
+    createRound, savePerformance, finalizeRound, saveRoundSummary,
+  };
+}
+
   return {
     rounds, performances, loading,
     fetchRounds, fetchPerformances, fetchAllPerformances,
