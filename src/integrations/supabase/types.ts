@@ -106,6 +106,7 @@ export type Database = {
           round_date: string
           round_number: number
           status: string
+          summary_text: string | null
           updated_at: string
         }
         Insert: {
@@ -115,6 +116,7 @@ export type Database = {
           round_date?: string
           round_number: number
           status?: string
+          summary_text?: string | null
           updated_at?: string
         }
         Update: {
@@ -124,6 +126,7 @@ export type Database = {
           round_date?: string
           round_number?: number
           status?: string
+          summary_text?: string | null
           updated_at?: string
         }
         Relationships: []
