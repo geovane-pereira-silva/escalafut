@@ -46,7 +46,17 @@ export default function PlayerForm({ onSave, editingPlayer, onCancelEdit, existi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) { toast.error('Informe o nome do jogador'); return; }
+    const trimmed = name.trim();
+    if (!trimmed) { toast.error('Informe o nome do jogador'); return; }
+
+    const normalized = normalizeName(trimmed);
+    const duplicate = existingPlayers.find(
+      p => normalizeName(p.name) === normalized && p.id !== editingPlayer?.id
+    );
+    if (duplicate) {
+      toast.error(`Já existe um jogador com este nome: "${duplicate.name}"`);
+      return;
+    }
 
     const player: Player = {
       id: editingPlayer?.id ?? crypto.randomUUID(),
