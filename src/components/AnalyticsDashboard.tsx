@@ -170,12 +170,88 @@ export default function AnalyticsDashboard({ players, rounds, allPerformances }:
     sector: { label: 'Setor', color: 'hsl(var(--accent))' },
   };
 
+  // Editorial highlights ---------------------------------------
+  const lastRound = finalizedRounds[finalizedRounds.length - 1];
+  const craqueRodada = (() => {
+    if (!lastRound) return null;
+    const perfs = allPerformances.filter(p => p.roundId === lastRound.id);
+    if (!perfs.length) return null;
+    const top = [...perfs].sort((a, b) => b.pointsCalculated - a.pointsCalculated)[0];
+    const player = players.find(p => p.id === top.playerId);
+    return player ? { player, value: top.pointsCalculated, round: lastRound.roundNumber } : null;
+  })();
+
+  const artilheiro = (() => {
+    const goals: Record<string, number> = {};
+    for (const perf of allPerformances) {
+      const g = Number(perf.scouts?.gol ?? 0);
+      if (g > 0) goals[perf.playerId] = (goals[perf.playerId] ?? 0) + g;
+    }
+    const entries = Object.entries(goals).sort((a, b) => b[1] - a[1]);
+    if (!entries.length) return null;
+    const player = players.find(p => p.id === entries[0][0]);
+    return player ? { player, value: entries[0][1] } : null;
+  })();
+
+  const sequenciaPresenca = (() => {
+    const rids = finalizedRounds.map(r => r.id);
+    let best: { player: Player; streak: number } | null = null;
+    for (const p of players) {
+      let streak = 0;
+      for (let i = rids.length - 1; i >= 0; i--) {
+        const has = allPerformances.some(x => x.playerId === p.id && x.roundId === rids[i]);
+        if (has) streak++; else break;
+      }
+      if (streak > 0 && (!best || streak > best.streak)) best = { player: p, streak };
+    }
+    return best;
+  })();
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-heading text-primary flex items-center gap-2">
         <BarChart3 className="h-5 w-5" />
         Analytics & Métricas
       </h2>
+
+      {/* Editorial Highlights */}
+      {(craqueRodada || artilheiro || sequenciaPresenca) && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {craqueRodada && (
+            <HighlightCard
+              icon={Crown}
+              eyebrow={`Rodada ${craqueRodada.round}`}
+              title="Craque da Rodada"
+              name={craqueRodada.player.name}
+              value={craqueRodada.value.toFixed(1)}
+              unit="pts"
+              accent="gold"
+            />
+          )}
+          {artilheiro && (
+            <HighlightCard
+              icon={Target}
+              eyebrow="Temporada"
+              title="Artilheiro"
+              name={artilheiro.player.name}
+              value={artilheiro.value.toString()}
+              unit={artilheiro.value === 1 ? 'gol' : 'gols'}
+              accent="red"
+            />
+          )}
+          {sequenciaPresenca && (
+            <HighlightCard
+              icon={Flame}
+              eyebrow="Em campo"
+              title="Sequência de Presença"
+              name={sequenciaPresenca.player.name}
+              value={sequenciaPresenca.streak.toString()}
+              unit={sequenciaPresenca.streak === 1 ? 'rodada' : 'rodadas seguidas'}
+              accent="green"
+            />
+          )}
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
