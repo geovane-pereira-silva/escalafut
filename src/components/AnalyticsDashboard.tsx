@@ -598,3 +598,55 @@ function DreamTeam({ players, vScores, playerStats, finalizedRounds, allPerforma
     </Card>
   );
 }
+
+/* ==============================
+   Editorial Highlight Card
+   ============================== */
+interface HighlightCardProps {
+  icon: typeof Trophy;
+  eyebrow: string;
+  title: string;
+  name: string;
+  value: string;
+  unit: string;
+  accent: 'gold' | 'red' | 'green';
+}
+
+function HighlightCard({ icon: Icon, eyebrow, title, name, value, unit, accent }: HighlightCardProps) {
+  const styles = {
+    gold: {
+      wrap: 'border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card',
+      iconBg: 'gradient-gold text-primary-foreground',
+      value: 'text-primary',
+    },
+    red: {
+      wrap: 'border-destructive/30 bg-gradient-to-br from-destructive/10 via-card to-card',
+      iconBg: 'bg-destructive/80 text-destructive-foreground',
+      value: 'text-destructive',
+    },
+    green: {
+      wrap: 'border-accent/30 bg-gradient-to-br from-accent/10 via-card to-card',
+      iconBg: 'bg-accent/80 text-accent-foreground',
+      value: 'text-accent',
+    },
+  }[accent];
+
+  return (
+    <div className={`relative overflow-hidden rounded-[var(--radius)] border p-4 shadow-[0_4px_20px_-10px_hsl(0_0%_0%/0.5)] ${styles.wrap}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[9px] font-heading tracking-[0.18em] uppercase text-muted-foreground">{eyebrow}</p>
+          <p className="text-[11px] font-heading tracking-wider uppercase text-foreground/80 mt-0.5">{title}</p>
+          <p className="text-sm font-medium mt-2 truncate">{name}</p>
+        </div>
+        <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${styles.iconBg}`}>
+          <Icon className="h-4 w-4" />
+        </div>
+      </div>
+      <div className="flex items-baseline gap-1.5 mt-2">
+        <span className={`text-3xl font-heading leading-none ${styles.value}`}>{value}</span>
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{unit}</span>
+      </div>
+    </div>
+  );
+}
