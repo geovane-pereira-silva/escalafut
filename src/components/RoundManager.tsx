@@ -375,6 +375,26 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
           previousPerformances={allPerformances}
         />
       )}
+
+      {/* AI Match Summary Chat */}
+      {selectedRound && selectedRoundId && (
+        <MatchSummaryChat
+          open={showAiChat}
+          onClose={() => setShowAiChat(false)}
+          players={escalaveisPlayers}
+          roundId={selectedRoundId}
+          initialSummary={selectedRound.summaryText}
+          onApply={async (rows, summaryText) => {
+            for (const row of rows) {
+              await savePerformance(row.playerId, selectedRoundId, row.scouts, row.points);
+            }
+            await saveRoundSummary(selectedRoundId, summaryText);
+            await fetchPerformances(selectedRoundId);
+            const updated = await fetchAllPerformances();
+            setAllPerformances(updated);
+          }}
+        />
+      )}
     </div>
   );
 }
