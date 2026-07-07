@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Plus, Lock, ClipboardList, Flame, Snowflake, TrendingUp } from 'lucide-react';
+import { Plus, Lock, ClipboardList, Flame, Snowflake, TrendingUp, Sparkles } from 'lucide-react';
 import RoundClosureSummary from '@/components/RoundClosureSummary';
+import MatchSummaryChat from '@/components/MatchSummaryChat';
 
 interface RoundManagerProps {
   players: Player[];
@@ -92,7 +93,7 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
   const {
     rounds, performances, loading,
     fetchPerformances, fetchAllPerformances,
-    createRound, savePerformance, finalizeRound,
+    createRound, savePerformance, finalizeRound, saveRoundSummary,
   } = useRounds(coachId);
 
   const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
@@ -101,6 +102,7 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
   const [allPerformances, setAllPerformances] = useState<PlayerPerformance[]>([]);
   const [showClosureSummary, setShowClosureSummary] = useState(false);
   const [closureRound, setClosureRound] = useState<Round | null>(null);
+  const [showAiChat, setShowAiChat] = useState(false);
 
   const selectedRound = rounds.find(r => r.id === selectedRoundId);
   const isFinalized = selectedRound?.status === 'finalized';
@@ -235,9 +237,17 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
         )}
 
         {selectedRound && selectedRound.status === 'open' && (
-          <Button onClick={handleFinalize} variant="destructive" className="font-heading gap-1">
-            <Lock className="h-4 w-4" /> Finalizar Rodada
-          </Button>
+          <>
+            <Button
+              onClick={() => setShowAiChat(true)}
+              className="gradient-gold text-primary-foreground font-heading gap-1"
+            >
+              <Sparkles className="h-4 w-4" /> Preencher com IA
+            </Button>
+            <Button onClick={handleFinalize} variant="destructive" className="font-heading gap-1">
+              <Lock className="h-4 w-4" /> Finalizar Rodada
+            </Button>
+          </>
         )}
       </div>
 
@@ -363,6 +373,26 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
           performances={allPerformances}
           players={players}
           previousPerformances={allPerformances}
+        />
+      )}
+
+      {/* AI Match Summary Chat */}
+      {selectedRound && selectedRoundId && (
+        <MatchSummaryChat
+          open={showAiChat}
+          onClose={() => setShowAiChat(false)}
+          players={escalaveisPlayers}
+          roundId={selectedRoundId}
+          initialSummary={selectedRound.summaryText}
+          onApply={async (rows, summaryText) => {
+            for (const row of rows) {
+              await savePerformance(row.playerId, selectedRoundId, row.scouts, row.points);
+            }
+            await saveRoundSummary(selectedRoundId, summaryText);
+            await fetchPerformances(selectedRoundId);
+            const updated = await fetchAllPerformances();
+            setAllPerformances(updated);
+          }}
         />
       )}
     </div>

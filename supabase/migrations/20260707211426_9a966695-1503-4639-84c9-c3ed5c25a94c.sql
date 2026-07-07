@@ -1,0 +1,1 @@
+ALTER TABLE public.rounds ADD COLUMN IF NOT EXISTS summary_text TEXT;
