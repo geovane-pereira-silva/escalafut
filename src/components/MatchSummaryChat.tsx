@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Sparkles, Loader2, Check, X, RefreshCw, MessageSquareText } from 'lucide-react';
+import { Sparkles, Loader2, Check, X, RefreshCw, Bot, User2 } from 'lucide-react';
 
 interface Props {
   open: boolean;
