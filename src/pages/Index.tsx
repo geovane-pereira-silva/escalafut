@@ -165,7 +165,9 @@ export default function Index() {
                   onSave={handleSave}
                   editingPlayer={editingPlayer}
                   onCancelEdit={handleCancelEdit}
+                  existingPlayers={players}
                 />
+
               )}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="lg:sticky lg:top-6 lg:self-start">
