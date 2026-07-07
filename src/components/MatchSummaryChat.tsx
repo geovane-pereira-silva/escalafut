@@ -126,18 +126,50 @@ export default function MatchSummaryChat({ open, onClose, players, roundId, init
 
         {step === 'input' && (
           <div className="space-y-3 mt-2">
-            <div className="text-xs text-muted-foreground flex items-center gap-1">
-              <MessageSquareText className="h-3 w-3" />
-              Ex: "Time verde ganhou 4x2. João fez 2 gols e deu 1 assistência. Pedro fez 1 gol. Carlos (goleiro) fez 3 defesas difíceis. Ricardo levou amarelo."
+            {/* Assistant bubble */}
+            <div className="flex items-start gap-2">
+              <div className="h-7 w-7 rounded-full gradient-gold flex items-center justify-center shrink-0">
+                <Bot className="h-3.5 w-3.5 text-primary-foreground" />
+              </div>
+              <div className="rounded-2xl rounded-tl-sm bg-muted/60 border border-border/50 px-3 py-2 text-xs text-foreground/90 max-w-[85%]">
+                Me conta como foi a pelada. Ex: <span className="italic text-muted-foreground">"Time verde ganhou 4x2. João fez 2 gols e deu 1 assistência. Carlos (goleiro) fez 3 defesas difíceis. Ricardo levou amarelo."</span>
+              </div>
             </div>
-            <Textarea
-              value={summary}
-              onChange={e => setSummary(e.target.value)}
-              placeholder="Escreva o que aconteceu na partida com suas próprias palavras..."
-              rows={8}
-              className="resize-none"
-            />
-            <div className="flex justify-end gap-2">
+
+            {/* User bubble (input) */}
+            <div className="flex items-start gap-2 justify-end">
+              <div className="flex-1 max-w-[85%]">
+                <Textarea
+                  value={summary}
+                  onChange={e => setSummary(e.target.value)}
+                  placeholder="Escreva o resumo da partida..."
+                  rows={7}
+                  className="resize-none rounded-2xl rounded-tr-sm bg-primary/10 border-primary/30 focus-visible:ring-primary/40"
+                />
+              </div>
+              <div className="h-7 w-7 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0">
+                <User2 className="h-3.5 w-3.5 text-primary" />
+              </div>
+            </div>
+
+            {/* Processing bubble */}
+            {loading && (
+              <div className="flex items-start gap-2">
+                <div className="h-7 w-7 rounded-full gradient-gold flex items-center justify-center shrink-0">
+                  <Bot className="h-3.5 w-3.5 text-primary-foreground animate-pulse" />
+                </div>
+                <div className="rounded-2xl rounded-tl-sm bg-muted/60 border border-border/50 px-3 py-2 text-xs flex items-center gap-1.5">
+                  <span className="text-muted-foreground">Analisando a partida</span>
+                  <span className="flex gap-0.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '120ms' }} />
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '240ms' }} />
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 pt-1">
               <Button variant="outline" onClick={handleClose}>Cancelar</Button>
               <Button
                 onClick={handleParse}
