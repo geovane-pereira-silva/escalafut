@@ -14,13 +14,18 @@ interface PlayerFormProps {
   onSave: (player: Player) => void;
   editingPlayer: Player | null;
   onCancelEdit: () => void;
+  existingPlayers?: Player[];
+}
+
+function normalizeName(n: string) {
+  return n.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
 }
 
 function capitalize(name: string) {
   return name.replace(/\b\w/g, c => c.toUpperCase());
 }
 
-export default function PlayerForm({ onSave, editingPlayer, onCancelEdit }: PlayerFormProps) {
+export default function PlayerForm({ onSave, editingPlayer, onCancelEdit, existingPlayers = [] }: PlayerFormProps) {
   const [name, setName] = useState('');
   const [active, setActive] = useState(true);
   const [posPrimary, setPosPrimary] = useState<Position>('ZG');
@@ -41,7 +46,17 @@ export default function PlayerForm({ onSave, editingPlayer, onCancelEdit }: Play
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) { toast.error('Informe o nome do jogador'); return; }
+    const trimmed = name.trim();
+    if (!trimmed) { toast.error('Informe o nome do jogador'); return; }
+
+    const normalized = normalizeName(trimmed);
+    const duplicate = existingPlayers.find(
+      p => normalizeName(p.name) === normalized && p.id !== editingPlayer?.id
+    );
+    if (duplicate) {
+      toast.error(`Já existe um jogador com este nome: "${duplicate.name}"`);
+      return;
+    }
 
     const player: Player = {
       id: editingPlayer?.id ?? crypto.randomUUID(),
