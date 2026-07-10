@@ -56,17 +56,24 @@ export function calculatePoints(scouts: Scouts, position: Position): number {
 }
 
 /**
- * V-Score: weighted average of last 5 rounds
- * V = (P1*1.5 + P2*1.2 + P3 + P4 + P5) / 5
- * P1 = most recent, P5 = oldest
+ * V-Score: média ponderada das últimas 5 rodadas finalizadas.
+ * P1 = mais recente (peso 1.5), P2 (peso 1.2), P3..P5 (peso 1).
+ * Divisor = soma dos pesos aplicados (mantém escala consistente
+ * mesmo para jogadores com menos de 5 partidas).
+ *
+ * Bug fix: divisor anterior (`min(len, 5)`) inflava o V-Score de
+ * jogadores com 1 partida — peso 1.5 dividido por 1 = pontos × 1.5.
  */
 export function calculateVScore(pointsHistory: number[]): number {
   if (!pointsHistory.length) return 0;
   const weights = [1.5, 1.2, 1, 1, 1];
-  const last5 = pointsHistory.slice(-5).reverse(); // most recent first
+  const last5 = pointsHistory.slice(-5).reverse();
   let total = 0;
+  let weightSum = 0;
   for (let i = 0; i < last5.length; i++) {
-    total += last5[i] * (weights[i] ?? 1);
+    const w = weights[i] ?? 1;
+    total += last5[i] * w;
+    weightSum += w;
   }
-  return total / Math.min(last5.length, 5);
+  return weightSum > 0 ? total / weightSum : 0;
 }
