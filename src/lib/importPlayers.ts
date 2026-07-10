@@ -28,9 +28,9 @@ function mapSkills(ataque: number, defesa: number, velocidade: number, apoio: nu
   Object.assign(s, a, d, v, ap, f, misc);
   if (pos === 'GL') {
     const gk = Math.round((defesa + apoio) / 2);
-    s.qualidadeGoleiro = Math.min(20, gk * 2);
-    s.defensorPenalti = Math.min(20, Math.round(defesa * 2));
-    s.defensorFaltas = Math.min(20, Math.round(defesa * 1.8));
+    s.qualidadeGoleiro = Math.min(100, gk * 10);
+    s.defensorPenalti = Math.min(100, Math.round(defesa * 10));
+    s.defensorFaltas = Math.min(100, Math.round(defesa * 9));
   }
   return s;
 }
