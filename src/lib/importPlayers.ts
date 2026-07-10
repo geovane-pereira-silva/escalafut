@@ -5,13 +5,13 @@ const POS_MAP: Record<string, Position> = {
   MEIA: 'ME', ATACANTE: 'CA',
 };
 
-// Spread a 0-10 value across multiple skills (scale to 0-20)
-function spread(val: number, keys: string[], variance = 1): Record<string, number> {
-  const base = Math.round(val * 2);
+// Spread a 0-10 value across multiple skills (scale to 0-100)
+function spread(val: number, keys: string[], variance = 5): Record<string, number> {
+  const base = Math.round(val * 10);
   const result: Record<string, number> = {};
   keys.forEach((k, i) => {
     const offset = (i % 2 === 0 ? variance : -variance);
-    result[k] = Math.max(0, Math.min(20, base + offset));
+    result[k] = Math.max(0, Math.min(100, base + offset));
   });
   return result;
 }
@@ -28,9 +28,9 @@ function mapSkills(ataque: number, defesa: number, velocidade: number, apoio: nu
   Object.assign(s, a, d, v, ap, f, misc);
   if (pos === 'GL') {
     const gk = Math.round((defesa + apoio) / 2);
-    s.qualidadeGoleiro = Math.min(20, gk * 2);
-    s.defensorPenalti = Math.min(20, Math.round(defesa * 2));
-    s.defensorFaltas = Math.min(20, Math.round(defesa * 1.8));
+    s.qualidadeGoleiro = Math.min(100, gk * 10);
+    s.defensorPenalti = Math.min(100, Math.round(defesa * 10));
+    s.defensorFaltas = Math.min(100, Math.round(defesa * 9));
   }
   return s;
 }
