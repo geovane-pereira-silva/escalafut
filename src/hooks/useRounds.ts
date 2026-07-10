@@ -100,22 +100,17 @@ export function useRounds(coachId: string | null) {
 
   const fetchAllPerformances = useCallback(async (): Promise<PlayerPerformance[]> => {
     if (!coachId) return [];
-    // Bug fix: fazíamos 2 round-trips (rounds + performances). Um JOIN
-    // via inner-select via Supabase resolve com 1 request. Se falhar o join,
-    // caímos no fallback antigo.
-    const { data, error } = await supabase
-      .from('player_performance')
-      .select('*, rounds!inner(coach_id)')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .eq('rounds.coach_id' as any, coachId);
-    if (!error && data) {
-      return (data ?? []).map(dbToPerformance);
-    }
-    // Fallback (mantém o comportamento original em caso de restrições de policy).
-    const { data: roundData } = await supabase
+    // 2 round-trips: primeiro os IDs de rodadas do técnico, depois as
+    // performances daquelas rodadas. Um JOIN inline seria melhor, mas
+    // os tipos gerados do Supabase não modelam a relação inversa aqui.
+    const { data: roundData, error: rErr } = await supabase
       .from('rounds')
       .select('id')
       .eq('coach_id', coachId);
+    if (rErr) {
+      console.error('[useRounds.fetchAllPerformances/rounds]', rErr);
+      return [];
+    }
     if (!roundData?.length) return [];
     const roundIds = roundData.map((r) => r.id);
     const { data: perfs, error: pErr } = await supabase
@@ -123,7 +118,7 @@ export function useRounds(coachId: string | null) {
       .select('*')
       .in('round_id', roundIds);
     if (pErr) {
-      console.error('[useRounds.fetchAllPerformances]', pErr);
+      console.error('[useRounds.fetchAllPerformances/perfs]', pErr);
       return [];
     }
     return (perfs ?? []).map(dbToPerformance);
