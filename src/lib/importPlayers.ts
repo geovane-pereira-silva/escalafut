@@ -5,13 +5,13 @@ const POS_MAP: Record<string, Position> = {
   MEIA: 'ME', ATACANTE: 'CA',
 };
 
-// Spread a 0-10 value across multiple skills (scale to 0-20)
-function spread(val: number, keys: string[], variance = 1): Record<string, number> {
-  const base = Math.round(val * 2);
+// Spread a 0-10 value across multiple skills (scale to 0-100)
+function spread(val: number, keys: string[], variance = 5): Record<string, number> {
+  const base = Math.round(val * 10);
   const result: Record<string, number> = {};
   keys.forEach((k, i) => {
     const offset = (i % 2 === 0 ? variance : -variance);
-    result[k] = Math.max(0, Math.min(20, base + offset));
+    result[k] = Math.max(0, Math.min(100, base + offset));
   });
   return result;
 }
