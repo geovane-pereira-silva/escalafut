@@ -112,38 +112,63 @@ export default function RoundManager({ players, coachId }: RoundManagerProps) {
     if (selectedRoundId) fetchPerformances(selectedRoundId);
   }, [selectedRoundId, fetchPerformances]);
 
+  // Chaves estáveis para o useEffect abaixo — evitam refetch por referência.
+  const roundsCount = rounds.length;
+  const finalizedCount = useMemo(
+    () => rounds.filter((r) => r.status === 'finalized').length,
+    [rounds],
+  );
+
   // Load all performances for V-Score
   useEffect(() => {
-    fetchAllPerformances().then(p => setAllPerformances(p));
-  }, [fetchAllPerformances, rounds]);
+    let cancelled = false;
+    fetchAllPerformances().then((p) => {
+      if (!cancelled) setAllPerformances(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchAllPerformances, roundsCount, finalizedCount]);
 
-  // V-Score per player
+  // Index compartilhado (playerId+roundId → pontos) para evitar find() O(N).
+  const perfIndex = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of allPerformances) m.set(`${p.playerId}:${p.roundId}`, p.pointsCalculated);
+    return m;
+  }, [allPerformances]);
+
+  const finalizedRoundIds = useMemo(
+    () =>
+      [...rounds]
+        .filter((r) => r.status === 'finalized')
+        .sort((a, b) => a.roundNumber - b.roundNumber)
+        .map((r) => r.id),
+    [rounds],
+  );
+
+  // V-Score por jogador
   const vScores = useMemo(() => {
     const map: Record<string, number> = {};
-    const sortedRounds = [...rounds].sort((a, b) => a.roundNumber - b.roundNumber);
-    const finalizedRoundIds = sortedRounds.filter(r => r.status === 'finalized').map(r => r.id);
-
     for (const player of players) {
-      const history = finalizedRoundIds
-        .map(rid => allPerformances.find(p => p.playerId === player.id && p.roundId === rid))
-        .filter(Boolean)
-        .map(p => p!.pointsCalculated);
+      const history: number[] = [];
+      for (const rid of finalizedRoundIds) {
+        const pts = perfIndex.get(`${player.id}:${rid}`);
+        if (pts !== undefined) history.push(pts);
+      }
       map[player.id] = calculateVScore(history);
     }
     return map;
-  }, [players, rounds, allPerformances]);
+  }, [players, finalizedRoundIds, perfIndex]);
 
-  // Consistency (std dev) for risk indicator
+  // Consistency (std dev) para indicador de risco
   const consistency = useMemo(() => {
     const map: Record<string, { stdDev: number; avg: number; trend: 'hot' | 'cold' | 'neutral' }> = {};
-    const sortedRounds = [...rounds].sort((a, b) => a.roundNumber - b.roundNumber);
-    const finalizedRoundIds = sortedRounds.filter(r => r.status === 'finalized').map(r => r.id);
-
     for (const player of players) {
-      const history = finalizedRoundIds
-        .map(rid => allPerformances.find(p => p.playerId === player.id && p.roundId === rid))
-        .filter(Boolean)
-        .map(p => p!.pointsCalculated);
+      const history: number[] = [];
+      for (const rid of finalizedRoundIds) {
+        const pts = perfIndex.get(`${player.id}:${rid}`);
+        if (pts !== undefined) history.push(pts);
+      }
 
       if (history.length < 2) {
         map[player.id] = { stdDev: 0, avg: 0, trend: 'neutral' };

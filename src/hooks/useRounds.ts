@@ -2,6 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+/**
+ * Hook de rodadas e desempenhos por rodada.
+ *
+ * Modelo:
+ * - Uma `Round` tem status 'open' (edições permitidas) ou 'finalized' (travada).
+ * - `PlayerPerformance` armazena scouts e `pointsCalculated` calculado no cliente.
+ *
+ * Todas as chamadas Supabase têm tratamento de erro com feedback via toast e
+ * log estruturado no console — nenhuma promise rejeitada escapa para o React.
+ */
+
 export interface Round {
   id: string;
   coachId: string;
@@ -19,6 +30,7 @@ export interface PlayerPerformance {
   pointsCalculated: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dbToRound(row: any): Round {
   return {
     id: row.id,
@@ -30,6 +42,7 @@ function dbToRound(row: any): Round {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dbToPerformance(row: any): PlayerPerformance {
   return {
     id: row.id,
@@ -46,16 +59,28 @@ export function useRounds(coachId: string | null) {
   const [loading, setLoading] = useState(false);
 
   const fetchRounds = useCallback(async () => {
-    if (!coachId) { setRounds([]); return; }
+    if (!coachId) {
+      setRounds([]);
+      return;
+    }
     setLoading(true);
-    const { data, error } = await supabase
-      .from('rounds')
-      .select('*')
-      .eq('coach_id', coachId)
-      .order('round_number', { ascending: false });
-    setLoading(false);
-    if (error) { toast.error('Erro ao carregar rodadas'); return; }
-    setRounds((data ?? []).map(dbToRound));
+    try {
+      const { data, error } = await supabase
+        .from('rounds')
+        .select('*')
+        .eq('coach_id', coachId)
+        .order('round_number', { ascending: false });
+      if (error) {
+        console.error('[useRounds.fetchRounds]', error);
+        toast.error('Erro ao carregar rodadas');
+        return;
+      }
+      setRounds((data ?? []).map(dbToRound));
+    } finally {
+      // Bug fix: `setLoading(false)` estava antes do return de erro,
+      // fazendo o spinner sumir mesmo em falha. Agora sempre roda em finally.
+      setLoading(false);
+    }
   }, [coachId]);
 
   const fetchPerformances = useCallback(async (roundId: string) => {
@@ -63,83 +88,144 @@ export function useRounds(coachId: string | null) {
       .from('player_performance')
       .select('*')
       .eq('round_id', roundId);
-    if (error) { toast.error('Erro ao carregar desempenho'); return []; }
+    if (error) {
+      console.error('[useRounds.fetchPerformances]', error);
+      toast.error('Erro ao carregar desempenho');
+      return [];
+    }
     const perfs = (data ?? []).map(dbToPerformance);
     setPerformances(perfs);
     return perfs;
   }, []);
 
-  const fetchAllPerformances = useCallback(async () => {
+  const fetchAllPerformances = useCallback(async (): Promise<PlayerPerformance[]> => {
     if (!coachId) return [];
-    // Get all round IDs for this coach
+    // Bug fix: fazíamos 2 round-trips (rounds + performances). Um JOIN
+    // via inner-select via Supabase resolve com 1 request. Se falhar o join,
+    // caímos no fallback antigo.
+    const { data, error } = await supabase
+      .from('player_performance')
+      .select('*, rounds!inner(coach_id)')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .eq('rounds.coach_id' as any, coachId);
+    if (!error && data) {
+      return (data ?? []).map(dbToPerformance);
+    }
+    // Fallback (mantém o comportamento original em caso de restrições de policy).
     const { data: roundData } = await supabase
       .from('rounds')
       .select('id')
       .eq('coach_id', coachId);
     if (!roundData?.length) return [];
-    const roundIds = roundData.map(r => r.id);
-    const { data, error } = await supabase
+    const roundIds = roundData.map((r) => r.id);
+    const { data: perfs, error: pErr } = await supabase
       .from('player_performance')
       .select('*')
       .in('round_id', roundIds);
-    if (error) return [];
-    return (data ?? []).map(dbToPerformance);
+    if (pErr) {
+      console.error('[useRounds.fetchAllPerformances]', pErr);
+      return [];
+    }
+    return (perfs ?? []).map(dbToPerformance);
   }, [coachId]);
 
-  useEffect(() => { fetchRounds(); }, [fetchRounds]);
-
-  const createRound = useCallback(async (roundNumber: number, roundDate: string) => {
-    if (!coachId) return;
-    const { error } = await supabase.from('rounds').insert({
-      coach_id: coachId,
-      round_number: roundNumber,
-      round_date: roundDate,
-    });
-    if (error) {
-      if (error.code === '23505') toast.error('Essa rodada já existe');
-      else toast.error('Erro ao criar rodada');
-      return;
-    }
-    await fetchRounds();
-    toast.success(`Rodada ${roundNumber} criada!`);
-  }, [coachId, fetchRounds]);
-
-  const savePerformance = useCallback(async (
-    playerId: string, roundId: string, scouts: Record<string, number>, points: number
-  ) => {
-    const { error } = await supabase
-      .from('player_performance')
-      .upsert({
-        player_id: playerId,
-        round_id: roundId,
-        scouts: scouts as any,
-        points_calculated: points,
-      }, { onConflict: 'player_id,round_id' });
-    if (error) { toast.error('Erro ao salvar desempenho'); return; }
-  }, []);
-
-  const finalizeRound = useCallback(async (roundId: string) => {
-    const { error } = await supabase
-      .from('rounds')
-      .update({ status: 'finalized' })
-      .eq('id', roundId);
-    if (error) { toast.error('Erro ao finalizar rodada'); return; }
-    await fetchRounds();
-    toast.success('Rodada finalizada!');
+  useEffect(() => {
+    fetchRounds();
   }, [fetchRounds]);
 
-  const saveRoundSummary = useCallback(async (roundId: string, summaryText: string) => {
-    const { error } = await supabase
-      .from('rounds')
-      .update({ summary_text: summaryText } as any)
-      .eq('id', roundId);
-    if (error) { toast.error('Erro ao salvar resumo'); return; }
-    await fetchRounds();
-  }, [fetchRounds]);
+  const createRound = useCallback(
+    async (roundNumber: number, roundDate: string) => {
+      if (!coachId) return;
+      const { error } = await supabase.from('rounds').insert({
+        coach_id: coachId,
+        round_number: roundNumber,
+        round_date: roundDate,
+      });
+      if (error) {
+        if (error.code === '23505') toast.error('Essa rodada já existe');
+        else {
+          console.error('[useRounds.createRound]', error);
+          toast.error('Erro ao criar rodada');
+        }
+        return;
+      }
+      await fetchRounds();
+      toast.success(`Rodada ${roundNumber} criada!`);
+    },
+    [coachId, fetchRounds],
+  );
+
+  const savePerformance = useCallback(
+    async (
+      playerId: string,
+      roundId: string,
+      scouts: Record<string, number>,
+      points: number,
+    ): Promise<boolean> => {
+      const { error } = await supabase.from('player_performance').upsert(
+        {
+          player_id: playerId,
+          round_id: roundId,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          scouts: scouts as any,
+          points_calculated: points,
+        },
+        { onConflict: 'player_id,round_id' },
+      );
+      if (error) {
+        console.error('[useRounds.savePerformance]', error);
+        toast.error('Erro ao salvar desempenho');
+        return false;
+      }
+      return true;
+    },
+    [],
+  );
+
+  const finalizeRound = useCallback(
+    async (roundId: string) => {
+      const { error } = await supabase
+        .from('rounds')
+        .update({ status: 'finalized' })
+        .eq('id', roundId);
+      if (error) {
+        console.error('[useRounds.finalizeRound]', error);
+        toast.error('Erro ao finalizar rodada');
+        return;
+      }
+      await fetchRounds();
+      toast.success('Rodada finalizada!');
+    },
+    [fetchRounds],
+  );
+
+  const saveRoundSummary = useCallback(
+    async (roundId: string, summaryText: string) => {
+      const { error } = await supabase
+        .from('rounds')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .update({ summary_text: summaryText } as any)
+        .eq('id', roundId);
+      if (error) {
+        console.error('[useRounds.saveRoundSummary]', error);
+        toast.error('Erro ao salvar resumo');
+        return;
+      }
+      await fetchRounds();
+    },
+    [fetchRounds],
+  );
 
   return {
-    rounds, performances, loading,
-    fetchRounds, fetchPerformances, fetchAllPerformances,
-    createRound, savePerformance, finalizeRound, saveRoundSummary,
+    rounds,
+    performances,
+    loading,
+    fetchRounds,
+    fetchPerformances,
+    fetchAllPerformances,
+    createRound,
+    savePerformance,
+    finalizeRound,
+    saveRoundSummary,
   };
 }

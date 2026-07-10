@@ -11,7 +11,9 @@ export type ScoutAction = typeof SCOUT_ACTIONS[number];
 export const SCOUT_LABELS: Record<ScoutAction, string> = {
   gols: 'Gols',
   assistencias: 'Assistências',
-  desarmes: 'Desarmes / Def. Difícil',
+  // Bug fix: rótulo antigo dizia "Desarmes / Def. Difícil", confundindo com
+  // `defesasDificeis` (que é exclusivo de goleiro). Cada scout tem semântica única.
+  desarmes: 'Desarmes',
   defesasDificeis: 'Defesas Difíceis (GK)',
   jogoSemSofrerGol: 'Jogo sem Sofrer Gol',
   cartaoAmarelo: 'Cartão Amarelo',

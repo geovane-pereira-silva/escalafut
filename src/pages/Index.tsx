@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { toast } from 'sonner';
 import { calculateVScore } from '@/lib/scoring';
+import type { PlayerPerformance } from '@/hooks/useRounds';
 import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } from 'lucide-react';
 
 function LazyFallback() {
@@ -37,7 +38,7 @@ export default function Index() {
   const [coachId, setCoachId] = useState<string | null>(getLastCoachId());
   const { players, loading, savePlayer } = usePlayers(coachId);
   const { rounds, fetchAllPerformances } = useRounds(coachId);
-  const [allPerformances, setAllPerformances] = useState<any[]>([]);
+  const [allPerformances, setAllPerformances] = useState<PlayerPerformance[]>([]);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -46,20 +47,44 @@ export default function Index() {
   const [activeTab, setActiveTab] = useState('selecao');
   const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[]; imbalance: number } | null>(null);
 
-  useEffect(() => {
-    fetchAllPerformances().then(p => setAllPerformances(p));
-  }, [fetchAllPerformances, rounds]);
+  // Bug fix: depender de `rounds` (referência de array) causava refetch a cada
+  // fetchRounds, mesmo sem mudanças reais. Chaveamos por contagem total +
+  // contagem finalizadas, que são os únicos deltas relevantes para V-Score.
+  const roundsCount = rounds.length;
+  const finalizedCount = useMemo(
+    () => rounds.filter((r) => r.status === 'finalized').length,
+    [rounds],
+  );
 
-  // V-Scores for lineup optimizer
+  useEffect(() => {
+    let cancelled = false;
+    fetchAllPerformances().then((p) => {
+      if (!cancelled) setAllPerformances(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchAllPerformances, roundsCount, finalizedCount]);
+
+  // V-Scores para o otimizador de escalação (memoizado por jogador × rodada).
   const vScores = useMemo(() => {
     const map: Record<string, number> = {};
-    const finalizedRounds = [...rounds].filter(r => r.status === 'finalized').sort((a, b) => a.roundNumber - b.roundNumber);
-    const roundIds = finalizedRounds.map(r => r.id);
+    const finalizedRounds = [...rounds]
+      .filter((r) => r.status === 'finalized')
+      .sort((a, b) => a.roundNumber - b.roundNumber);
+    const roundIds = finalizedRounds.map((r) => r.id);
+
+    // Index perf por (playerId, roundId) — evita O(P × R × N) do find().
+    const perfIndex = new Map<string, number>();
+    for (const perf of allPerformances) {
+      perfIndex.set(`${perf.playerId}:${perf.roundId}`, perf.pointsCalculated);
+    }
     for (const player of players) {
-      const history = roundIds
-        .map(rid => allPerformances.find((p: any) => p.playerId === player.id && p.roundId === rid))
-        .filter(Boolean)
-        .map((p: any) => p.pointsCalculated);
+      const history: number[] = [];
+      for (const rid of roundIds) {
+        const pts = perfIndex.get(`${player.id}:${rid}`);
+        if (pts !== undefined) history.push(pts);
+      }
       map[player.id] = calculateVScore(history);
     }
     return map;
