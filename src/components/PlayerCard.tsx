@@ -10,16 +10,16 @@ interface PlayerCardProps {
   onEdit: (p: Player) => void;
 }
 
-// Position → tint token (hsl var)
+// Position → refined tint tokens (desaturated, luxo/minimal)
 const POS_TINT: Record<string, { bg: string; ring: string; label: string }> = {
-  GL: { bg: 'hsl(35 90% 45% / 0.25)', ring: 'hsl(35 90% 55%)', label: 'text-warning' },
-  ZG: { bg: 'hsl(215 80% 55% / 0.22)', ring: 'hsl(215 80% 60%)', label: 'text-team-blue' },
-  LE: { bg: 'hsl(215 80% 55% / 0.22)', ring: 'hsl(215 80% 60%)', label: 'text-team-blue' },
-  LD: { bg: 'hsl(215 80% 55% / 0.22)', ring: 'hsl(215 80% 60%)', label: 'text-team-blue' },
-  VO: { bg: 'hsl(145 50% 40% / 0.28)', ring: 'hsl(145 60% 50%)', label: 'text-accent' },
-  ME: { bg: 'hsl(145 50% 40% / 0.28)', ring: 'hsl(145 60% 50%)', label: 'text-accent' },
-  PO: { bg: 'hsl(0 70% 50% / 0.22)', ring: 'hsl(0 75% 60%)', label: 'text-destructive' },
-  CA: { bg: 'hsl(0 70% 50% / 0.22)', ring: 'hsl(0 75% 60%)', label: 'text-destructive' },
+  GL: { bg: 'hsl(38 45% 55% / 0.14)', ring: 'hsl(38 45% 62%)',  label: 'text-warning' },
+  ZG: { bg: 'hsl(212 40% 55% / 0.14)', ring: 'hsl(212 45% 62%)', label: 'text-team-blue' },
+  LE: { bg: 'hsl(212 40% 55% / 0.14)', ring: 'hsl(212 45% 62%)', label: 'text-team-blue' },
+  LD: { bg: 'hsl(212 40% 55% / 0.14)', ring: 'hsl(212 45% 62%)', label: 'text-team-blue' },
+  VO: { bg: 'hsl(158 30% 45% / 0.16)', ring: 'hsl(158 32% 55%)', label: 'text-accent' },
+  ME: { bg: 'hsl(158 30% 45% / 0.16)', ring: 'hsl(158 32% 55%)', label: 'text-accent' },
+  PO: { bg: 'hsl(4 55% 55% / 0.14)',   ring: 'hsl(4 60% 62%)',   label: 'text-destructive' },
+  CA: { bg: 'hsl(4 55% 55% / 0.14)',   ring: 'hsl(4 60% 62%)',   label: 'text-destructive' },
 };
 
 function initials(name: string): string {
