@@ -126,7 +126,8 @@ export default function Index() {
       const escalaveisAtivos = players.filter(p => p.escalavel && p.active);
       const result = generateTeams(escalaveisAtivos);
       setTeams(result);
-      setShowTeams(true);
+      setActiveTab('escalacao');
+      toast.success('Times sorteados! Deslize para navegar.');
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -135,7 +136,8 @@ export default function Index() {
   const activeCount = players.filter(p => p.escalavel && p.active).length;
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${activeTab === 'selecao' ? 'gradient-selection' : 'gradient-pitch'}`}>
+    <div className={`min-h-screen transition-colors duration-500 ${activeTab === 'elenco' ? 'gradient-selection' : 'gradient-pitch'}`}>
+
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4">
