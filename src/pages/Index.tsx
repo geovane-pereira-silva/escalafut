@@ -19,6 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import ThemeToggle from '@/components/ThemeToggle';
 import { toast } from 'sonner';
 import { calculateVScore } from '@/lib/scoring';
 import type { PlayerPerformance } from '@/hooks/useRounds';
