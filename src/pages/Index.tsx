@@ -41,9 +41,8 @@ export default function Index() {
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [showTeams, setShowTeams] = useState(false);
-  const [showField, setShowField] = useState(false);
-  const [activeTab, setActiveTab] = useState('selecao');
+  const [activeTab, setActiveTab] = useState('elenco');
+
   const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[]; imbalance: number } | null>(null);
 
   // Bug fix: depender de `rounds` (referência de array) causava refetch a cada
