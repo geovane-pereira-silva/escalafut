@@ -9,21 +9,19 @@ import CoachAccess from '@/components/CoachAccess';
 import PlayerForm from '@/components/PlayerForm';
 import PlayerList from '@/components/PlayerList';
 import PlayerRadar from '@/components/PlayerRadar';
-import TeamDisplay from '@/components/TeamDisplay';
-import SelectionView from '@/components/SelectionView';
+import LineupStories from '@/components/LineupStories';
 const RoundManager = lazy(() => import('@/components/RoundManager'));
 const AnalyticsDashboard = lazy(() => import('@/components/AnalyticsDashboard'));
-const LineupField = lazy(() => import('@/components/LineupField'));
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ThemeToggle from '@/components/ThemeToggle';
 import { toast } from 'sonner';
 import { calculateVScore } from '@/lib/scoring';
 import type { PlayerPerformance } from '@/hooks/useRounds';
-import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } from 'lucide-react';
+import { Swords, Trophy, UserPlus, ClipboardList, BarChart3, Users } from 'lucide-react';
+
 
 function LazyFallback() {
   return (
@@ -43,9 +41,8 @@ export default function Index() {
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [showTeams, setShowTeams] = useState(false);
-  const [showField, setShowField] = useState(false);
-  const [activeTab, setActiveTab] = useState('selecao');
+  const [activeTab, setActiveTab] = useState('elenco');
+
   const [teams, setTeams] = useState<{ teamA: Player[]; teamB: Player[]; imbalance: number } | null>(null);
 
   // Bug fix: depender de `rounds` (referência de array) causava refetch a cada
@@ -129,7 +126,8 @@ export default function Index() {
       const escalaveisAtivos = players.filter(p => p.escalavel && p.active);
       const result = generateTeams(escalaveisAtivos);
       setTeams(result);
-      setShowTeams(true);
+      setActiveTab('escalacao');
+      toast.success('Times sorteados! Deslize para navegar.');
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -138,7 +136,8 @@ export default function Index() {
   const activeCount = players.filter(p => p.escalavel && p.active).length;
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${activeTab === 'selecao' ? 'gradient-selection' : 'gradient-pitch'}`}>
+    <div className={`min-h-screen transition-colors duration-500 ${activeTab === 'elenco' ? 'gradient-selection' : 'gradient-pitch'}`}>
+
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -155,17 +154,17 @@ export default function Index() {
         {coachId ? (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="bg-card border border-border h-auto grid grid-cols-4 w-full sm:w-auto sm:inline-flex gap-1 p-1">
-              <TabsTrigger value="selecao" aria-label="Presença" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
-                <Swords className="h-4 w-4" />
-                <span>Presença</span>
-              </TabsTrigger>
-              <TabsTrigger value="cadastro" aria-label="Elenco" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
-                <UserPlus className="h-4 w-4" />
+              <TabsTrigger value="elenco" aria-label="Elenco" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
+                <Users className="h-4 w-4" />
                 <span>Elenco</span>
               </TabsTrigger>
               <TabsTrigger value="rodadas" aria-label="Rodadas" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
                 <ClipboardList className="h-4 w-4" />
                 <span>Rodadas</span>
+              </TabsTrigger>
+              <TabsTrigger value="escalacao" aria-label="Escalação" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
+                <Swords className="h-4 w-4" />
+                <span>Escalação</span>
               </TabsTrigger>
               <TabsTrigger value="analytics" aria-label="Estatísticas" className="font-heading flex-col sm:flex-row gap-1 sm:gap-2 min-h-[52px] px-2 text-[10px] sm:text-sm">
                 <BarChart3 className="h-4 w-4" />
@@ -173,22 +172,21 @@ export default function Index() {
               </TabsTrigger>
             </TabsList>
 
-            {/* Presença Tab — main flow */}
-            <TabsContent value="selecao" className="space-y-6 pb-28">
-              <SelectionView
-                players={players}
-                onUpdatePlayer={savePlayer}
-              />
-            </TabsContent>
+            {/* Elenco unificado — cadastro + presença no mesmo lugar */}
+            <TabsContent value="elenco" className="space-y-6 pb-28">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div>
+                  <h2 className="text-2xl font-heading text-primary">Elenco</h2>
+                  <p className="text-xs text-muted-foreground">Cadastre, edite atributos e marque presença — tudo aqui.</p>
+                </div>
+                {!showForm && (
+                  <Button onClick={handleNewPlayer} className="gradient-gold text-primary-foreground font-heading gap-2 min-h-[44px]">
+                    <UserPlus className="h-4 w-4" />
+                    Adicionar Jogador
+                  </Button>
+                )}
+              </div>
 
-            {/* Cadastro Tab */}
-            <TabsContent value="cadastro" className="space-y-6">
-              {!showForm && (
-                <Button onClick={handleNewPlayer} className="gradient-gold text-primary-foreground font-heading gap-2">
-                  <UserPlus className="h-4 w-4" />
-                  Adicionar Jogador
-                </Button>
-              )}
               {showForm && (
                 <PlayerForm
                   onSave={handleSave}
@@ -196,18 +194,18 @@ export default function Index() {
                   onCancelEdit={handleCancelEdit}
                   existingPlayers={players}
                 />
-
               )}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+              <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,380px)_1fr] gap-6">
                 <div className="lg:sticky lg:top-6 lg:self-start">
                   <PlayerRadar player={selectedPlayer} />
                 </div>
-                <div className="max-h-[70vh] overflow-y-auto pr-1">
+                <div className="lg:max-h-[75vh] lg:overflow-y-auto pr-1">
                   <PlayerList
                     players={players}
                     onEdit={handleEdit}
-                    
                     onSelect={setSelectedPlayer}
+                    onTogglePresence={handleToggleEscalavel}
                     selectedId={selectedPlayer?.id}
                   />
                 </div>
@@ -218,6 +216,34 @@ export default function Index() {
               <Suspense fallback={<LazyFallback />}>
                 <RoundManager players={players} coachId={coachId} />
               </Suspense>
+            </TabsContent>
+
+            {/* Escalação — apresentação em Stories */}
+            <TabsContent value="escalacao" className="space-y-4">
+              {teams ? (
+                <ErrorBoundary label="stories da escalação" onReset={() => setTeams(null)}>
+                  <LineupStories
+                    teamA={teams.teamA}
+                    teamB={teams.teamB}
+                    imbalance={teams.imbalance}
+                    onResort={handleEscalar}
+                    onBackToRoster={() => setActiveTab('elenco')}
+                  />
+                </ErrorBoundary>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-24 space-y-4 text-center">
+                  <Swords className="h-14 w-14 text-primary/40" />
+                  <div className="space-y-1">
+                    <p className="font-heading text-lg text-primary">Nenhum sorteio ainda</p>
+                    <p className="text-sm text-muted-foreground max-w-sm">
+                      Vá até <span className="text-primary">Elenco</span>, confirme os presentes e toque em <b>Escalar</b>.
+                    </p>
+                  </div>
+                  <Button onClick={() => setActiveTab('elenco')} variant="outline" className="min-h-[44px]">
+                    Ir para o Elenco
+                  </Button>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="analytics" className="space-y-6">
@@ -239,8 +265,8 @@ export default function Index() {
           </div>
         )}
 
-        {/* Sticky floating action — only on Presença tab */}
-        {coachId && activeTab === 'selecao' && (
+        {/* Sticky "Escalar" — só no Elenco */}
+        {coachId && activeTab === 'elenco' && (
           <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.3)]">
             <div className="max-w-7xl mx-auto">
               <Button
@@ -251,48 +277,13 @@ export default function Index() {
                 <Swords className="h-5 w-5" />
                 {activeCount < 14
                   ? `${activeCount}/14 confirmados`
-                  : `${activeCount} confirmados — Sortear Times`}
+                  : `Escalar (${activeCount} confirmados)`}
               </Button>
             </div>
           </div>
         )}
-
-        {/* Team result modal */}
-        {teams && (
-          <ErrorBoundary label="times sorteados" onReset={() => setShowTeams(false)}>
-            <TeamDisplay
-              open={showTeams}
-              onClose={() => setShowTeams(false)}
-              teamA={teams.teamA}
-              teamB={teams.teamB}
-              imbalance={teams.imbalance}
-              onOpenField={() => {
-                setShowTeams(false);
-                setShowField(true);
-              }}
-            />
-          </ErrorBoundary>
-        )}
-
-        {/* Advanced: Lineup field as opt-in modal */}
-        <Dialog open={showField} onOpenChange={v => !v && setShowField(false)}>
-          <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto p-3 sm:p-6">
-            <DialogHeader>
-              <DialogTitle className="font-heading text-primary">
-                Ajustar posições no campo
-              </DialogTitle>
-              <p className="text-xs text-muted-foreground">
-                Opcional — só para refinar a formação. Se você só quer saber os times, o sorteio já está pronto.
-              </p>
-            </DialogHeader>
-            <ErrorBoundary label="campo" onReset={() => setShowField(false)}>
-              <Suspense fallback={<LazyFallback />}>
-                <LineupField players={players} vScores={vScores} />
-              </Suspense>
-            </ErrorBoundary>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
+
   );
 }

@@ -1,6 +1,10 @@
 # Plano completo — Escalafut
 
+> **STATUS (2026-07-12):** Etapa 1 concluída e válida. Etapas 2–7 **PAUSADAS** por decisão do usuário até nova autorização — a unificação Elenco+Presença e a aba Escalação Stories mexeram nos mesmos componentes-alvo (SelectionView, PlayerList, PlayerCard) e continuar em paralelo geraria conflito.
+
 Escopo enorme. Vou entregar em **7 etapas independentes**, cada uma commitável e testável isoladamente. Você aprova o plano e depois decide se executo tudo em sequência ou só algumas etapas.
+
+
 
 Antes de começar: preciso confirmar prioridade. Se você quer tudo, executo na ordem abaixo (do que dá mais risco/valor para o menos). Se quiser só parte, me diga quais etapas.
 
