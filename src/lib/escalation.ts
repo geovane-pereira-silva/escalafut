@@ -139,13 +139,14 @@ export function generateTeams(players: Player[]): { teamA: Player[]; teamB: Play
 
   // Distribute each group alternately
   const distribute = (group: Player[]) => {
-    // Sort by overall desc for fairness
-    group.sort((a, b) => getSectorAvg(b, 'tecnico') - getSectorAvg(a, 'tecnico'));
+    // Sort por score primário, empates resolvidos por secundária → visão.
+    group.sort(compareForDistribution);
     for (let i = 0; i < group.length; i++) {
       if (teamA.length <= teamB.length) teamA.push(group[i]);
       else teamB.push(group[i]);
     }
   };
+
 
   distribute(gks);
   distribute(defs);
