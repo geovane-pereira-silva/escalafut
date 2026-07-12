@@ -7,9 +7,11 @@ interface PlayerListProps {
   onEdit: (player: Player) => void;
   onSelect: (player: Player) => void;
   selectedId?: string;
+  /** Opcional: mostra toggle de presença nos cards e agrupa por escalável/fora. */
+  onTogglePresence?: (player: Player) => void;
 }
 
-export default function PlayerList({ players, onEdit, onSelect, selectedId }: PlayerListProps) {
+export default function PlayerList({ players, onEdit, onSelect, selectedId, onTogglePresence }: PlayerListProps) {
   const activePlayers = players.filter(p => p.active);
   const inactivePlayers = players.filter(p => !p.active);
 
@@ -21,22 +23,26 @@ export default function PlayerList({ players, onEdit, onSelect, selectedId }: Pl
     })).filter(g => g.players.length > 0);
 
   const groupedActive = groupByPosition(activePlayers);
+  const confirmados = activePlayers.filter(p => p.escalavel).length;
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-heading text-primary">
-            Jogadores <span className="text-muted-foreground text-sm">({players.length})</span>
+            Elenco <span className="text-muted-foreground text-sm">({players.length})</span>
           </h2>
           <p className="text-xs text-muted-foreground mt-1">
-            Cadastro do elenco. Presença semanal fica na aba <span className="text-primary">Presença</span>.
+            {onTogglePresence
+              ? 'Edite atributos e marque presença direto no card. Mínimo 14 confirmados para sortear.'
+              : 'Cadastro do elenco.'}
           </p>
         </div>
         <Badge variant="secondary" className="font-heading">
-          {activePlayers.filter(p => p.escalavel).length} confirmados
+          {confirmados} confirmados
         </Badge>
       </div>
+
 
       <div className="space-y-5">
         {groupedActive.map(g => (
