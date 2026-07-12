@@ -11,6 +11,22 @@ Formato: entradas novas SEMPRE no topo. Nunca apagar entradas antigas.
 
 ---
 
+## [2026-07-12] — Elenco unificado + aba Escalação em Stories
+- O que foi feito:
+  - Fundidas as abas "Presença" e "Cadastro" numa única aba **Elenco**: PlayerForm, PlayerRadar e PlayerList no mesmo lugar. Cada card do `PlayerList` recebeu um toggle de presença opcional (`onTogglePresence` no `PlayerCard`), então editar atributos, ver radar e marcar presença acontecem sem trocar de tela.
+  - Nova aba **Escalação** exibindo o resultado do último sorteio em formato de Stories (3 slides: Time Vermelho fullscreen → Time Azul fullscreen → lado a lado por posição). Navegação por toque (metade esquerda volta, direita avança), setas do teclado, barras segmentadas de progresso no topo. Componente novo: `src/components/LineupStories.tsx`.
+  - Botão sticky **Escalar** no rodapé da aba Elenco agora leva direto para a aba Escalação com os times prontos (não abre mais modal).
+  - Critério de desempate no algoritmo de distribuição (`lib/escalation.ts`): quando dois jogadores empatam na média técnica primária, desempate por (1) score na posição secundária, (2) atributo `visao` como proxy de "capacidade de decidir jogo".
+  - `TeamDisplay` (modal antigo) e `LineupField` (dialog do campo) continuam no repo, mas fora do fluxo principal — o novo caminho é `Escalar → Stories`. `SelectionView` também segue existindo mas não é mais referenciada.
+- Arquivos: `src/lib/escalation.ts`, `src/components/PlayerCard.tsx`, `src/components/PlayerList.tsx`, `src/components/LineupStories.tsx` (novo), `src/pages/Index.tsx`.
+- Por quê: eliminar a duplicidade Presença × Cadastro (fonte histórica de confusão com o toggle de disponibilidade) e transformar o "resultado do sorteio" numa experiência de apresentação (jogada boa pra mostrar no vestiário).
+
+## [2026-07-11] — Pausa das etapas 2–7 do plano de refatoração
+- O que foi feito: `.lovable/plan.md` marcado como PAUSADO nas etapas 2–7 até nova autorização. Etapa 1 (bug fixes) segue válida.
+- Por quê: unificação Elenco/Presença mexe nos mesmos componentes que as etapas 2–3 iriam refatorar; rodar em paralelo geraria conflito.
+
+
+
 ## [2026-07-10] — Documentação viva `/docs`
 - O que foi feito: criada estrutura `/docs` com visão geral, arquitetura, um arquivo por módulo (jogadores, rodadas, seleção, analytics, IA, auth, branding) e este changelog retroativo.
 - Arquivos/componentes afetados: `docs/**` (novo).
