@@ -146,7 +146,10 @@ export default function Index() {
             <Trophy className="h-8 w-8 text-primary" />
             <h1 className="text-3xl font-heading text-primary tracking-wide">Escalafut</h1>
           </div>
-          <CoachAccess onLogin={handleLogin} initialId={coachId ?? ''} />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <CoachAccess onLogin={handleLogin} initialId={coachId ?? ''} />
+          </div>
         </div>
 
         {coachId ? (
