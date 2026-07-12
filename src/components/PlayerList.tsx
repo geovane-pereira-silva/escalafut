@@ -62,8 +62,10 @@ export default function PlayerList({ players, onEdit, onSelect, selectedId, onTo
                   selected={selectedId === p.id}
                   onSelect={onSelect}
                   onEdit={onEdit}
+                  onTogglePresence={onTogglePresence}
                 />
               ))}
+
             </div>
           </div>
         ))}
