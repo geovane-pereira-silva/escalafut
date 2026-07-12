@@ -6,35 +6,35 @@
 
 @layer base {
   :root {
-    /* Escalafut — Light theme (clean luxury, warm off-white canvas) */
-    --background: 40 30% 97%;
-    --foreground: 220 15% 12%;
+    /* Escalafut — Light theme (crisp white, minimal luxury) */
+    --background: 0 0% 100%;
+    --foreground: 220 15% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 12%;
+    --card-foreground: 220 15% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 12%;
+    --popover-foreground: 220 15% 10%;
 
-    /* Champagne bronze — legível sobre claro */
-    --primary: 35 42% 42%;
-    --primary-foreground: 40 30% 98%;
+    /* Champagne bronze — legível sobre branco */
+    --primary: 35 38% 40%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 20% 92%;
+    --secondary: 220 14% 96%;
     --secondary-foreground: 220 15% 15%;
 
-    --muted: 40 18% 93%;
-    --muted-foreground: 220 8% 40%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 8% 42%;
 
-    --accent: 158 40% 34%;
-    --accent-foreground: 40 30% 98%;
+    --accent: 158 40% 32%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 4 68% 48%;
-    --destructive-foreground: 40 30% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 12% 86%;
-    --input: 220 12% 88%;
-    --ring: 35 42% 42%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 35 38% 40%;
 
     --radius: 0.75rem;
 
@@ -46,15 +46,16 @@
     --success: 158 45% 38%;
     --warning: 38 80% 45%;
 
-    --sidebar-background: 40 25% 96%;
-    --sidebar-foreground: 220 15% 12%;
-    --sidebar-primary: 35 42% 42%;
-    --sidebar-primary-foreground: 40 30% 98%;
-    --sidebar-accent: 40 20% 90%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 15% 10%;
+    --sidebar-primary: 35 38% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
     --sidebar-accent-foreground: 220 15% 15%;
-    --sidebar-border: 220 12% 86%;
-    --sidebar-ring: 35 42% 42%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 35 38% 40%;
   }
+
 
   .dark {
     /* Escalafut — Dark theme (Clean Luxury) */
