@@ -9,21 +9,19 @@ import CoachAccess from '@/components/CoachAccess';
 import PlayerForm from '@/components/PlayerForm';
 import PlayerList from '@/components/PlayerList';
 import PlayerRadar from '@/components/PlayerRadar';
-import TeamDisplay from '@/components/TeamDisplay';
-import SelectionView from '@/components/SelectionView';
+import LineupStories from '@/components/LineupStories';
 const RoundManager = lazy(() => import('@/components/RoundManager'));
 const AnalyticsDashboard = lazy(() => import('@/components/AnalyticsDashboard'));
-const LineupField = lazy(() => import('@/components/LineupField'));
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ThemeToggle from '@/components/ThemeToggle';
 import { toast } from 'sonner';
 import { calculateVScore } from '@/lib/scoring';
 import type { PlayerPerformance } from '@/hooks/useRounds';
-import { Swords, Trophy, Users, UserPlus, ClipboardList, BarChart3, Shield } from 'lucide-react';
+import { Swords, Trophy, UserPlus, ClipboardList, BarChart3, Users } from 'lucide-react';
+
 
 function LazyFallback() {
   return (
