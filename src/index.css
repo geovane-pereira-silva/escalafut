@@ -6,52 +6,60 @@
 
 @layer base {
   :root {
-    --background: 150 20% 8%;
-    --foreground: 45 20% 92%;
+    /* Escalafut — Clean Luxury palette
+       Neutral near-black canvas + refined champagne accent.
+       Colors kept intentionally desaturated to maximize legibility. */
 
-    --card: 150 15% 12%;
-    --card-foreground: 45 20% 92%;
+    --background: 220 12% 7%;
+    --foreground: 40 20% 96%;
 
-    --popover: 150 15% 14%;
-    --popover-foreground: 45 20% 92%;
+    --card: 220 10% 10%;
+    --card-foreground: 40 20% 96%;
 
-    --primary: 45 80% 55%;
-    --primary-foreground: 150 20% 8%;
+    --popover: 220 10% 11%;
+    --popover-foreground: 40 20% 96%;
 
-    --secondary: 150 12% 18%;
-    --secondary-foreground: 45 20% 85%;
+    /* Champagne — softer than saturated gold, WCAG AA on dark surfaces */
+    --primary: 40 45% 68%;
+    --primary-foreground: 220 15% 8%;
 
-    --muted: 150 10% 16%;
-    --muted-foreground: 150 10% 55%;
+    --secondary: 220 8% 15%;
+    --secondary-foreground: 40 15% 90%;
 
-    --accent: 145 50% 40%;
-    --accent-foreground: 45 20% 95%;
+    --muted: 220 8% 13%;
+    --muted-foreground: 220 8% 68%;
 
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 100%;
+    /* Muted emerald — for positive/escalável states, not neon */
+    --accent: 158 32% 48%;
+    --accent-foreground: 220 15% 8%;
 
-    --border: 150 12% 20%;
-    --input: 150 12% 22%;
-    --ring: 45 80% 55%;
+    /* Softer rose destructive — reads well on dark, no harsh red vibration */
+    --destructive: 4 62% 58%;
+    --destructive-foreground: 40 20% 98%;
+
+    --border: 220 8% 18%;
+    --input: 220 8% 20%;
+    --ring: 40 45% 68%;
 
     --radius: 0.75rem;
 
-    --team-blue: 215 80% 55%;
+    /* Team colors — desaturated for a modern, premium look */
+    --team-blue: 212 55% 58%;
     --team-blue-foreground: 0 0% 100%;
-    --team-red: 0 75% 55%;
+    --team-red: 4 62% 58%;
     --team-red-foreground: 0 0% 100%;
 
-    --success: 145 60% 45%;
-    --warning: 35 90% 55%;
+    --success: 158 42% 52%;
+    --warning: 38 78% 62%;
 
-    --sidebar-background: 150 15% 10%;
-    --sidebar-foreground: 45 20% 92%;
-    --sidebar-primary: 45 80% 55%;
-    --sidebar-primary-foreground: 150 20% 8%;
-    --sidebar-accent: 150 12% 18%;
-    --sidebar-accent-foreground: 45 20% 85%;
-    --sidebar-border: 150 12% 20%;
-    --sidebar-ring: 45 80% 55%;
+    --sidebar-background: 220 12% 8%;
+    --sidebar-foreground: 40 20% 96%;
+    --sidebar-primary: 40 45% 68%;
+    --sidebar-primary-foreground: 220 15% 8%;
+    --sidebar-accent: 220 8% 15%;
+    --sidebar-accent-foreground: 40 15% 90%;
+    --sidebar-border: 220 8% 18%;
+    --sidebar-ring: 40 45% 68%;
   }
 }
 
@@ -112,17 +120,17 @@
   }
 
   .gradient-gold {
-    background: linear-gradient(135deg, hsl(45 80% 55%), hsl(35 90% 45%));
+    background: linear-gradient(135deg, hsl(40 55% 74%), hsl(35 40% 58%));
   }
 
   .gradient-pitch {
-    background: linear-gradient(180deg, hsl(150 20% 8%) 0%, hsl(145 25% 12%) 100%);
+    background: linear-gradient(180deg, hsl(220 12% 7%) 0%, hsl(220 10% 10%) 100%);
   }
 
   .gradient-selection {
     background:
-      radial-gradient(ellipse at top, hsl(145 45% 18% / 0.9) 0%, transparent 60%),
-      linear-gradient(180deg, hsl(150 30% 10%) 0%, hsl(150 35% 6%) 100%);
+      radial-gradient(ellipse at top, hsl(40 40% 60% / 0.08) 0%, transparent 60%),
+      linear-gradient(180deg, hsl(220 12% 8%) 0%, hsl(220 14% 5%) 100%);
   }
 
   .team-blue-bg {
