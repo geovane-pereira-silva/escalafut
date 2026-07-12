@@ -64,7 +64,7 @@ function MiniRadar({ player, color }: { player: Player; color: string }) {
   );
 }
 
-export default function PlayerCard({ player, selected, onSelect, onEdit }: PlayerCardProps) {
+export default function PlayerCard({ player, selected, onSelect, onEdit, onTogglePresence }: PlayerCardProps) {
   const tint = POS_TINT[player.positionPrimary] ?? POS_TINT.VO;
   const ovr = getPlayerOverall(player);
   const ovrS = ovrStyle(ovr);
