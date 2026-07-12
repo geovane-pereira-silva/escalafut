@@ -1,14 +1,17 @@
 import { Player, getPlayerOverall, getSectorAvg } from '@/types/player';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Pencil, CheckCircle2, XCircle } from 'lucide-react';
+import { Pencil, CheckCircle2, XCircle, UserCheck, UserX } from 'lucide-react';
 
 interface PlayerCardProps {
   player: Player;
   selected?: boolean;
   onSelect: (p: Player) => void;
   onEdit: (p: Player) => void;
+  /** Se fornecido, renderiza um botão de toggle presença/escalável no card. */
+  onTogglePresence?: (p: Player) => void;
 }
+
 
 // Position → refined tint tokens (desaturated, luxo/minimal)
 const POS_TINT: Record<string, { bg: string; ring: string; label: string }> = {
