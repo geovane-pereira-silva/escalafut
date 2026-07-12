@@ -143,6 +143,21 @@ export default function PlayerCard({ player, selected, onSelect, onEdit, onToggl
       >
         <Pencil className="h-3.5 w-3.5" />
       </Button>
+
+      {/* Presence toggle — opcional */}
+      {onTogglePresence && !inactive && (
+        <button
+          onClick={e => { e.stopPropagation(); onTogglePresence(player); }}
+          aria-label={player.escalavel ? `Marcar ${player.name} como fora` : `Confirmar ${player.name}`}
+          className={`flex items-center gap-1 text-[10px] px-2 py-1.5 rounded-md shrink-0 font-heading tracking-wider transition-colors min-h-[36px]
+            ${player.escalavel
+              ? 'bg-accent/20 text-accent hover:bg-accent/30 border border-accent/40'
+              : 'bg-destructive/15 text-destructive hover:bg-destructive/25 border border-destructive/40'}`}
+        >
+          {player.escalavel ? <UserCheck className="h-3.5 w-3.5" /> : <UserX className="h-3.5 w-3.5" />}
+        </button>
+      )}
     </div>
   );
 }
+
