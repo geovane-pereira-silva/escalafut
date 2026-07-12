@@ -6,10 +6,58 @@
 
 @layer base {
   :root {
-    /* Escalafut — Clean Luxury palette
-       Neutral near-black canvas + refined champagne accent.
-       Colors kept intentionally desaturated to maximize legibility. */
+    /* Escalafut — Light theme (clean luxury, warm off-white canvas) */
+    --background: 40 30% 97%;
+    --foreground: 220 15% 12%;
 
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 12%;
+
+    /* Champagne bronze — legível sobre claro */
+    --primary: 35 42% 42%;
+    --primary-foreground: 40 30% 98%;
+
+    --secondary: 40 20% 92%;
+    --secondary-foreground: 220 15% 15%;
+
+    --muted: 40 18% 93%;
+    --muted-foreground: 220 8% 40%;
+
+    --accent: 158 40% 34%;
+    --accent-foreground: 40 30% 98%;
+
+    --destructive: 4 68% 48%;
+    --destructive-foreground: 40 30% 98%;
+
+    --border: 220 12% 86%;
+    --input: 220 12% 88%;
+    --ring: 35 42% 42%;
+
+    --radius: 0.75rem;
+
+    --team-blue: 212 60% 45%;
+    --team-blue-foreground: 0 0% 100%;
+    --team-red: 4 68% 50%;
+    --team-red-foreground: 0 0% 100%;
+
+    --success: 158 45% 38%;
+    --warning: 38 80% 45%;
+
+    --sidebar-background: 40 25% 96%;
+    --sidebar-foreground: 220 15% 12%;
+    --sidebar-primary: 35 42% 42%;
+    --sidebar-primary-foreground: 40 30% 98%;
+    --sidebar-accent: 40 20% 90%;
+    --sidebar-accent-foreground: 220 15% 15%;
+    --sidebar-border: 220 12% 86%;
+    --sidebar-ring: 35 42% 42%;
+  }
+
+  .dark {
+    /* Escalafut — Dark theme (Clean Luxury) */
     --background: 220 12% 7%;
     --foreground: 40 20% 96%;
 
@@ -19,7 +67,6 @@
     --popover: 220 10% 11%;
     --popover-foreground: 40 20% 96%;
 
-    /* Champagne — softer than saturated gold, WCAG AA on dark surfaces */
     --primary: 40 45% 68%;
     --primary-foreground: 220 15% 8%;
 
@@ -29,11 +76,9 @@
     --muted: 220 8% 13%;
     --muted-foreground: 220 8% 68%;
 
-    /* Muted emerald — for positive/escalável states, not neon */
     --accent: 158 32% 48%;
     --accent-foreground: 220 15% 8%;
 
-    /* Softer rose destructive — reads well on dark, no harsh red vibration */
     --destructive: 4 62% 58%;
     --destructive-foreground: 40 20% 98%;
 
@@ -41,9 +86,6 @@
     --input: 220 8% 20%;
     --ring: 40 45% 68%;
 
-    --radius: 0.75rem;
-
-    /* Team colors — desaturated for a modern, premium look */
     --team-blue: 212 55% 58%;
     --team-blue-foreground: 0 0% 100%;
     --team-red: 4 62% 58%;
