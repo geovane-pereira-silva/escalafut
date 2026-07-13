@@ -11,6 +11,17 @@ Formato: entradas novas SEMPRE no topo. Nunca apagar entradas antigas.
 
 ---
 
+## [2026-07-13] — Parte 1: pelada AABB PIEAD + consolidação de dados
+- O que foi feito:
+  - Nova tabela `peladas` (com RLS pública temporária — apertar na Parte 2).
+  - Seed da pelada **AABB PIEAD** e vínculo `pelada_id` em `players` e `rounds` (NOT NULL), com FK cascade.
+  - Normalização de `coach_id` para minúsculas: `GEOVANE`/`Geovane` → `geovane` (22 jogadores + 3 rodadas), `Coach` → `coach` (16 jogadores). Ambos técnicos ficam na mesma pelada AABB PIEAD.
+  - Renumeração das 3 rodadas do Geovane que colidiam como "rodada 1" → agora 1 (finalized, 4 perfs), 2 (open, 0), 3 (open, 1 perf) em ordem cronológica. Performances preservadas (round_id não muda).
+  - Nova unicidade: `(pelada_id, round_number)` no lugar de `(coach_id, round_number)` — evita fragmentação por variação de caixa/técnico.
+  - `CoachAccess` agora normaliza input para minúsculas antes de logar; helper `getDefaultPeladaId` em `src/lib/pelada.ts` carimba inserts de players/rounds.
+- Arquivos: migração SQL, `src/lib/pelada.ts` (novo), `src/hooks/usePlayers.ts`, `src/hooks/useRounds.ts`, `src/components/CoachAccess.tsx`.
+- Por quê: causa raiz do bug "rodadas somem depois de atualizar" — cada variação de caixa (`GEOVANE`/`Geovane`/`geovane`) criava um técnico distinto e uma "rodada 1" separada, então o histórico oscilava conforme o texto digitado. Consolidando tudo sob uma pelada única e chave normalizada, o histórico fica estável. Parte 2 (auth email/Google + admin/hierarquia) vem depois.
+
 ## [2026-07-12] — Elenco unificado + aba Escalação em Stories
 - O que foi feito:
   - Fundidas as abas "Presença" e "Cadastro" numa única aba **Elenco**: PlayerForm, PlayerRadar e PlayerList no mesmo lugar. Cada card do `PlayerList` recebeu um toggle de presença opcional (`onTogglePresence` no `PlayerCard`), então editar atributos, ver radar e marcar presença acontecem sem trocar de tela.
