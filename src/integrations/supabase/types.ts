@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      peladas: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       player_performance: {
         Row: {
           created_at: string
@@ -67,6 +88,7 @@ export type Database = {
           escalavel: boolean
           id: string
           name: string
+          pelada_id: string
           position_primary: string
           position_secondary: string
           skills: Json
@@ -79,6 +101,7 @@ export type Database = {
           escalavel?: boolean
           id?: string
           name: string
+          pelada_id: string
           position_primary: string
           position_secondary?: string
           skills?: Json
@@ -91,18 +114,28 @@ export type Database = {
           escalavel?: boolean
           id?: string
           name?: string
+          pelada_id?: string
           position_primary?: string
           position_secondary?: string
           skills?: Json
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "players_pelada_id_fkey"
+            columns: ["pelada_id"]
+            isOneToOne: false
+            referencedRelation: "peladas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rounds: {
         Row: {
           coach_id: string
           created_at: string
           id: string
+          pelada_id: string
           round_date: string
           round_number: number
           status: string
@@ -113,6 +146,7 @@ export type Database = {
           coach_id: string
           created_at?: string
           id?: string
+          pelada_id: string
           round_date?: string
           round_number: number
           status?: string
@@ -123,13 +157,22 @@ export type Database = {
           coach_id?: string
           created_at?: string
           id?: string
+          pelada_id?: string
           round_date?: string
           round_number?: number
           status?: string
           summary_text?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "rounds_pelada_id_fkey"
+            columns: ["pelada_id"]
+            isOneToOne: false
+            referencedRelation: "peladas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
