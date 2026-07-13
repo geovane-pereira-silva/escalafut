@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Player, Position } from '@/types/player';
+import { getDefaultPeladaId } from '@/lib/pelada';
 import { toast } from 'sonner';
 
 /**
@@ -25,10 +26,11 @@ function dbToPlayer(row: any): Player {
   };
 }
 
-function playerToDb(player: Player, coachId: string) {
+function playerToDb(player: Player, coachId: string, peladaId: string) {
   return {
     id: player.id,
     coach_id: coachId,
+    pelada_id: peladaId,
     name: player.name,
     active: player.active,
     escalavel: player.escalavel ?? true,
@@ -75,12 +77,16 @@ export function usePlayers(coachId: string | null) {
   const savePlayer = useCallback(
     async (player: Player) => {
       if (!coachId) return;
-      // Auto-capitaliza cada palavra do nome antes de salvar
+      const peladaId = await getDefaultPeladaId();
+      if (!peladaId) {
+        toast.error('Pelada não encontrada');
+        return;
+      }
       const capitalized = {
         ...player,
         name: player.name.replace(/\b\w/g, (c) => c.toUpperCase()),
       };
-      const row = playerToDb(capitalized, coachId);
+      const row = playerToDb(capitalized, coachId, peladaId);
       const { error } = await supabase
         .from('players')
         .upsert(row, { onConflict: 'id' });
@@ -110,7 +116,12 @@ export function usePlayers(coachId: string | null) {
   const importPlayers = useCallback(
     async (newPlayers: Player[]) => {
       if (!coachId) return;
-      const rows = newPlayers.map((p) => playerToDb(p, coachId));
+      const peladaId = await getDefaultPeladaId();
+      if (!peladaId) {
+        toast.error('Pelada não encontrada');
+        return;
+      }
+      const rows = newPlayers.map((p) => playerToDb(p, coachId, peladaId));
       const { error } = await supabase
         .from('players')
         .upsert(rows, { onConflict: 'id' });

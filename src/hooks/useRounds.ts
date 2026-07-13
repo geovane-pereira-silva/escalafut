@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { getDefaultPeladaId } from '@/lib/pelada';
 import { toast } from 'sonner';
 
 /**
@@ -131,8 +132,14 @@ export function useRounds(coachId: string | null) {
   const createRound = useCallback(
     async (roundNumber: number, roundDate: string) => {
       if (!coachId) return;
+      const peladaId = await getDefaultPeladaId();
+      if (!peladaId) {
+        toast.error('Pelada não encontrada');
+        return;
+      }
       const { error } = await supabase.from('rounds').insert({
         coach_id: coachId,
+        pelada_id: peladaId,
         round_number: roundNumber,
         round_date: roundDate,
       });

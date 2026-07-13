@@ -13,7 +13,9 @@ export default function CoachAccess({ onLogin, initialId }: CoachAccessProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = id.trim();
+    // Normaliza para minúsculas — evita fragmentar o histórico se o técnico
+    // digitar "Geovane", "GEOVANE" ou "geovane" em sessões diferentes.
+    const trimmed = id.trim().toLowerCase();
     if (trimmed) onLogin(trimmed);
   };
 
